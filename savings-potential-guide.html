@@ -1,0 +1,3508 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Savings Potential Calculation Guide - VSTX Analytics</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-color: #6366f1;
+            --secondary-color: #8b5cf6;
+            --accent-color: #10b981;
+            --danger-color: #ef4444;
+            --warning-color: #f59e0b;
+            --dark-bg: #0f172a;
+            --light-bg: #f5f7fa;
+            --card-bg: #ffffff;
+            --text-primary: #1a202c;
+            --text-secondary: #4a5568;
+            --border-color: #e2e8f0;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--light-bg);
+            color: var(--text-primary);
+            line-height: 1.6;
+            scroll-behavior: smooth;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Header Styles */
+        .header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            padding: 4rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="grid" width="100" height="100" patternUnits="userSpaceOnUse"><path d="M 100 0 L 0 0 0 100" fill="none" stroke="white" stroke-width="0.5" opacity="0.1"/></pattern></defs><rect width="100%" height="100%" fill="url(%23grid)"/></svg>');
+            opacity: 0.1;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            letter-spacing: -1px;
+        }
+
+        .header-subtitle {
+            font-size: 1.25rem;
+            opacity: 0.9;
+            margin-bottom: 2rem;
+        }
+
+        .header-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            opacity: 0.8;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Site Navigation Bar */
+        .site-nav-bar {
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 0;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .site-nav-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .site-nav-link {
+            padding: 0.5rem 1rem;
+            text-decoration: none;
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .site-nav-link:hover {
+            color: var(--primary-color);
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .site-nav-link.active {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            border-color: transparent;
+        }
+
+        /* Navigation */
+        .nav-container {
+            background: white;
+            box-shadow: var(--shadow-md);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            gap: 2rem;
+            overflow-x: auto;
+            scrollbar-width: thin;
+        }
+
+        .nav-item {
+            padding: 1rem 0;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            white-space: nowrap;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .nav-item:hover {
+            color: var(--primary-color);
+        }
+
+        .nav-item.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+
+        /* Main Content */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
+
+        .section {
+            margin-bottom: 6rem;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .section-header {
+            margin-bottom: 3rem;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .section-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .section-subtitle {
+            font-size: 1.125rem;
+            color: var(--text-secondary);
+            max-width: 800px;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            box-shadow: var(--shadow-xl);
+            transform: translateY(-2px);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .card-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .badge-primary {
+            background: rgba(99, 102, 241, 0.1);
+            color: var(--primary-color);
+        }
+
+        .badge-success {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--accent-color);
+        }
+
+        .badge-warning {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning-color);
+        }
+
+        /* Grid Layouts */
+        .grid {
+            display: grid;
+            gap: 2rem;
+        }
+
+        .grid-2 {
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        }
+
+        .grid-4 {
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        }
+
+        /* Calculation Cards */
+        .calc-card {
+            background: linear-gradient(135deg, var(--card-bg), #f8fafc);
+            border-radius: 16px;
+            padding: 2rem;
+            border: 1px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .calc-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        }
+
+        .calc-formula {
+            background: #f1f5f9;
+            border-radius: 8px;
+            padding: 1rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+            margin: 1rem 0;
+            overflow-x: auto;
+        }
+
+        /* Tables */
+        .table-container {
+            overflow-x: auto;
+            margin: 2rem 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+        }
+
+        th {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            font-weight: 600;
+            text-align: left;
+            padding: 1rem;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover {
+            background: #f8fafc;
+        }
+
+        /* Interactive Elements */
+        .savings-calculator {
+            background: linear-gradient(135deg, #f8fafc, white);
+            border-radius: 16px;
+            padding: 2rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .calc-input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .calc-label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .calc-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .calc-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .calc-slider {
+            width: 100%;
+            margin: 1rem 0;
+        }
+
+        .calc-button {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .calc-button:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .calc-results {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: white;
+            border-radius: 12px;
+            border: 2px solid var(--accent-color);
+        }
+
+        /* Charts Container */
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin: 2rem 0;
+        }
+
+        /* Progress Indicators */
+        .progress-bar {
+            background: #e5e7eb;
+            border-radius: 10px;
+            height: 20px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: 10px;
+            transition: width 0.6s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        /* Timeline */
+        .timeline {
+            position: relative;
+            padding: 2rem 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--border-color);
+            transform: translateX(-50%);
+        }
+
+        .timeline-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 3rem;
+            position: relative;
+        }
+
+        .timeline-content {
+            width: 45%;
+            padding: 1.5rem;
+            background: white;
+            border-radius: 12px;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border-color);
+        }
+
+        .timeline-item:nth-child(even) .timeline-content:first-child {
+            order: 2;
+        }
+
+        .timeline-marker {
+            position: absolute;
+            left: 50%;
+            top: 2rem;
+            width: 20px;
+            height: 20px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            transform: translateX(-50%);
+            z-index: 1;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .tab {
+            padding: 1rem 1.5rem;
+            background: none;
+            border: none;
+            font-weight: 600;
+            color: var(--text-secondary);
+            cursor: pointer;
+            position: relative;
+            transition: color 0.3s ease;
+        }
+
+        .tab:hover {
+            color: var(--primary-color);
+        }
+
+        .tab.active {
+            color: var(--primary-color);
+        }
+
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--primary-color);
+            border-radius: 3px 3px 0 0;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .grid-2,
+            .grid-3,
+            .grid-4 {
+                grid-template-columns: 1fr;
+            }
+
+            .timeline::before {
+                left: 20px;
+            }
+
+            .timeline-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .timeline-content {
+                width: calc(100% - 40px);
+                margin-left: 40px;
+            }
+
+            .timeline-marker {
+                left: 20px;
+            }
+        }
+
+        /* Back to Top Button */
+        .back-to-top {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: var(--shadow-lg);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .back-to-top.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .back-to-top:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid var(--border-color);
+            border-radius: 50%;
+            border-top-color: var(--primary-color);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Scenario Comparison Styles */
+        .scenario-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .scenario-tab {
+            padding: 1rem 2rem;
+            background: none;
+            border: none;
+            font-weight: 600;
+            color: var(--text-secondary);
+            cursor: pointer;
+            position: relative;
+            transition: color 0.3s ease;
+            font-size: 1rem;
+        }
+
+        .scenario-tab:hover {
+            color: var(--primary-color);
+        }
+
+        .scenario-tab.active {
+            color: var(--primary-color);
+        }
+
+        .scenario-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--primary-color);
+            border-radius: 3px 3px 0 0;
+        }
+
+        .scenario-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .scenario-content.active {
+            display: block;
+        }
+
+        .scenario-result-card {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: var(--shadow-md);
+            border: 2px solid var(--border-color);
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .scenario-result-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .scenario-result-card.recommended {
+            border-color: var(--accent-color);
+            background: linear-gradient(135deg, #ffffff, #f0fdf4);
+        }
+
+        .recommended-badge {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--accent-color);
+            color: white;
+            padding: 4px 16px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .scenario-result-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .scenario-result-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+        }
+
+        .scenario-result-metrics {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .metric-item {
+            text-align: center;
+        }
+
+        .metric-label {
+            display: block;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.25rem;
+        }
+
+        .metric-value {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        /* Tooltip Styles */
+        .tooltip-wrapper {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            width: 100%;
+        }
+
+        .tooltip-icon {
+            width: 18px;
+            height: 18px;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: help;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .tooltip-icon:hover {
+            transform: scale(1.1);
+            background: var(--secondary-color);
+        }
+
+        .tooltip-content {
+            position: absolute;
+            bottom: calc(100% + 10px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            line-height: 1.4;
+            white-space: normal;
+            width: 250px;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .tooltip-content::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-top: 8px solid rgba(0, 0, 0, 0.9);
+        }
+
+        .tooltip-wrapper:hover .tooltip-content {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(-5px);
+        }
+
+        /* How to Use Panel */
+        .how-to-use-panel {
+            background: linear-gradient(135deg, #e0e7ff, #f0f4ff);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 2px solid var(--primary-color);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .how-to-use-panel::before {
+            content: '?';
+            position: absolute;
+            top: -20px;
+            right: -20px;
+            font-size: 120px;
+            font-weight: 700;
+            color: rgba(99, 102, 241, 0.1);
+            transform: rotate(-15deg);
+        }
+
+        .how-to-use-toggle {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .how-to-use-toggle:hover {
+            background: var(--secondary-color);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .how-to-use-content {
+            display: none;
+            animation: slideDown 0.3s ease;
+        }
+
+        .how-to-use-content.active {
+            display: block;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .how-to-use-steps {
+            display: grid;
+            gap: 1.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .how-to-step {
+            display: flex;
+            gap: 1rem;
+            align-items: start;
+        }
+
+        .step-number {
+            width: 32px;
+            height: 32px;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .step-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .step-description {
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .pro-tip {
+            background: rgba(99, 102, 241, 0.1);
+            border-left: 4px solid var(--primary-color);
+            padding: 1rem;
+            margin-top: 1rem;
+            border-radius: 8px;
+        }
+
+        .pro-tip-title {
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <h1>Savings Potential Calculation Guide</h1>
+            <p class="header-subtitle">VSTX Procurement Analytics Dashboard</p>
+
+            <div class="header-stats">
+                <div class="stat-card">
+                    <div class="stat-value">10-25%</div>
+                    <div class="stat-label">Average Total Savings</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">15%</div>
+                    <div class="stat-label">Tail Spend Savings</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">12%</div>
+                    <div class="stat-label">Contract Optimization</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">6-12mo</div>
+                    <div class="stat-label">ROI Timeline</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Site Navigation -->
+    <nav class="site-nav-bar">
+        <div class="site-nav-content">
+            <a href="index.html" class="site-nav-link">
+                <span>🏠</span> Home
+            </a>
+            <a href="analytics-dashboard.html" class="site-nav-link">
+                <span>📊</span> Analytics Dashboard
+            </a>
+            <a href="cost-savings-guide.html" class="site-nav-link">
+                <span>📚</span> Cost Savings Guide
+            </a>
+            <a href="procurement-analytics-hub.html" class="site-nav-link">
+                <span>🌐</span> Analytics Hub
+            </a>
+            <a href="savings-potential-guide.html" class="site-nav-link active">
+                <span>💰</span> Savings Calculator
+            </a>
+            <a href="pareto-analysis-guide.html" class="site-nav-link">
+                <span>📈</span> Pareto Guide
+            </a>
+        </div>
+    </nav>
+
+    <!-- Navigation -->
+    <nav class="nav-container">
+        <div class="nav">
+            <a href="#overview" class="nav-item active">Overview</a>
+            <a href="#methodologies" class="nav-item">Methodologies</a>
+            <a href="#calculations" class="nav-item">Calculations</a>
+            <a href="#examples" class="nav-item">Examples</a>
+            <a href="#implementation" class="nav-item">Implementation</a>
+            <a href="#calculator" class="nav-item">Calculator</a>
+            <a href="#scenario-comparison" class="nav-item">Scenario Tool</a>
+            <a href="#best-practices" class="nav-item">Best Practices</a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container">
+        <!-- Overview Section -->
+        <section id="overview" class="section">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <div class="section-icon">📊</div>
+                    Executive Overview
+                </h2>
+                <p class="section-subtitle">
+                    The VSTX Procurement Analytics Dashboard employs sophisticated algorithms to calculate potential
+                    savings across multiple procurement optimization strategies.
+                </p>
+            </div>
+
+            <div class="grid grid-3">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Key Highlights</h3>
+                        <span class="card-badge badge-primary">Essential</span>
+                    </div>
+                    <ul style="padding-left: 1.5rem; color: var(--text-secondary);">
+                        <li>Average savings: 10-25% of annual spend</li>
+                        <li>Primary opportunities in tail spend consolidation</li>
+                        <li>Risk-adjusted estimates provided</li>
+                        <li>ROI achievable within 6-12 months</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Core Components</h3>
+                        <span class="card-badge badge-success">Analytics</span>
+                    </div>
+                    <ul style="padding-left: 1.5rem; color: var(--text-secondary);">
+                        <li>Industry benchmarks validation</li>
+                        <li>AI-driven pattern recognition</li>
+                        <li>Risk assessment framework</li>
+                        <li>Portfolio-wide analysis</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Approach</h3>
+                        <span class="card-badge badge-warning">Strategy</span>
+                    </div>
+                    <ul style="padding-left: 1.5rem; color: var(--text-secondary);">
+                        <li>Conservative estimation model</li>
+                        <li>Data-driven insights</li>
+                        <li>Achievable targets</li>
+                        <li>Phased implementation</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Methodologies Section -->
+        <section id="methodologies" class="section">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <div class="section-icon">🔬</div>
+                    Calculation Methodologies
+                </h2>
+                <p class="section-subtitle">
+                    Five proven methodologies work together to identify and quantify savings opportunities across your
+                    procurement portfolio.
+                </p>
+            </div>
+
+            <div class="tabs">
+                <button class="tab active" onclick="showTab('tail-spend', this)">Tail Spend</button>
+                <button class="tab" onclick="showTab('consolidation', this)">Consolidation</button>
+                <button class="tab" onclick="showTab('category', this)">Category</button>
+                <button class="tab" onclick="showTab('contract', this)">Contract</button>
+                <button class="tab" onclick="showTab('strategic', this)">Strategic</button>
+            </div>
+
+            <div id="tail-spend" class="tab-content active">
+                <div class="calc-card">
+                    <h3 style="margin-bottom: 1rem;">Tail Spend Analysis Method</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                        Tail spend represents the bottom 80% of suppliers that typically account for only 20% of total
+                        spend.
+                    </p>
+
+                    <div class="calc-formula">
+                        Tail Spend Savings = Σ(Vendor Spend × Applicable Rate) + Administrative Savings
+                    </div>
+
+                    <table style="margin-top: 1.5rem;">
+                        <thead>
+                            <tr>
+                                <th>Vendor Type</th>
+                                <th>Annual Spend</th>
+                                <th>Savings Rate</th>
+                                <th>Admin Savings</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Micro</td>
+                                <td>&lt; $10,000</td>
+                                <td><span style="color: var(--accent-color); font-weight: 600;">15%</span></td>
+                                <td>$1,000/vendor</td>
+                            </tr>
+                            <tr>
+                                <td>Small</td>
+                                <td>$10,000 - $50,000</td>
+                                <td><span style="color: var(--warning-color); font-weight: 600;">12%</span></td>
+                                <td>$1,500/vendor</td>
+                            </tr>
+                            <tr>
+                                <td>Medium</td>
+                                <td>$50,000 - $100,000</td>
+                                <td><span style="color: var(--primary-color); font-weight: 600;">10%</span></td>
+                                <td>$2,000/vendor</td>
+                            </tr>
+                            <tr>
+                                <td>Tactical</td>
+                                <td>$100,000 - $250,000</td>
+                                <td><span style="color: var(--secondary-color); font-weight: 600;">8%</span></td>
+                                <td>$2,500/vendor</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div style="margin-top: 2rem;">
+                        <h4 style="margin-bottom: 1rem;">Additional Opportunities</h4>
+                        <div class="grid grid-3" style="gap: 1rem;">
+                            <div style="text-align: center; padding: 1rem; background: #f8fafc; border-radius: 8px;">
+                                <div style="font-size: 1.5rem; font-weight: 700; color: var(--primary-color);">$50</div>
+                                <div style="font-size: 0.875rem; color: var(--text-secondary);">P-Card
+                                    Savings/Transaction</div>
+                            </div>
+                            <div style="text-align: center; padding: 1rem; background: #f8fafc; border-radius: 8px;">
+                                <div style="font-size: 1.5rem; font-weight: 700; color: var(--accent-color);">10%</div>
+                                <div style="font-size: 0.875rem; color: var(--text-secondary);">Process Automation</div>
+                            </div>
+                            <div style="text-align: center; padding: 1rem; background: #f8fafc; border-radius: 8px;">
+                                <div style="font-size: 1.5rem; font-weight: 700; color: var(--warning-color);">5-8%
+                                </div>
+                                <div style="font-size: 0.875rem; color: var(--text-secondary);">Catalog Implementation
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="consolidation" class="tab-content">
+                <div class="calc-card">
+                    <h3 style="margin-bottom: 1rem;">Vendor Consolidation Method</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                        Identifies opportunities to reduce the supplier base while maintaining or improving service
+                        levels.
+                    </p>
+
+                    <div class="calc-formula">
+                        Consolidation Savings = Affected Spend × (Base Rate + Bonuses)
+                    </div>
+
+                    <div style="margin-top: 2rem;">
+                        <h4 style="margin-bottom: 1rem;">Savings Components</h4>
+                        <div class="grid grid-2" style="gap: 1rem;">
+                            <div class="progress-item">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                    <span>Base Consolidation Rate</span>
+                                    <span style="font-weight: 600;">12%</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 48%;">12%</div>
+                                </div>
+                            </div>
+                            <div class="progress-item">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                    <span>Multi-Category Bonus</span>
+                                    <span style="font-weight: 600;">+8%</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 32%;">+8%</div>
+                                </div>
+                            </div>
+                            <div class="progress-item">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                    <span>Geographic Consolidation</span>
+                                    <span style="font-weight: 600;">+5%</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 20%;">+5%</div>
+                                </div>
+                            </div>
+                            <div class="progress-item">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                    <span>Volume Leverage</span>
+                                    <span style="font-weight: 600;">+3%</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 12%;">+3%</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div
+                            style="margin-top: 1rem; padding: 1rem; background: #fef3c7; border-radius: 8px; border-left: 4px solid var(--warning-color);">
+                            <strong>Maximum Cap:</strong> 25% to ensure realistic projections
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="category" class="tab-content">
+                <div class="calc-card">
+                    <h3 style="margin-bottom: 1rem;">Category Optimization Method</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                        Analyzes spending patterns within categories to identify strategic sourcing opportunities.
+                    </p>
+
+                    <div class="calc-formula">
+                        Category Savings = Category Spend × Optimization Rate × Implementation Factor
+                    </div>
+
+                    <table style="margin-top: 1.5rem;">
+                        <thead>
+                            <tr>
+                                <th>Scenario</th>
+                                <th>Condition</th>
+                                <th>Savings Rate</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Over-fragmentation</td>
+                                <td>&gt;5 suppliers, &lt;$50K average</td>
+                                <td><span style="color: var(--accent-color); font-weight: 600;">10-15%</span></td>
+                            </tr>
+                            <tr>
+                                <td>Price Variance</td>
+                                <td>&gt;20% price difference</td>
+                                <td><span style="color: var(--warning-color); font-weight: 600;">8-12%</span></td>
+                            </tr>
+                            <tr>
+                                <td>Contract Gaps</td>
+                                <td>&lt;60% on contract</td>
+                                <td><span style="color: var(--danger-color); font-weight: 600;">12-18%</span></td>
+                            </tr>
+                            <tr>
+                                <td>Maverick Spend</td>
+                                <td>&gt;15% off-contract</td>
+                                <td><span style="color: var(--primary-color); font-weight: 600;">10-15%</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="contract" class="tab-content">
+                <div class="calc-card">
+                    <h3 style="margin-bottom: 1rem;">Contract Optimization Method</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                        Focuses on improving existing contracts and negotiating better terms based on performance.
+                    </p>
+
+                    <div class="calc-formula">
+                        Contract Savings = Contract Value × Performance Factor × Renegotiation Rate
+                    </div>
+
+                    <div style="margin-top: 2rem;">
+                        <h4 style="margin-bottom: 1rem;">Performance-Based Rates</h4>
+                        <div class="grid grid-2" style="gap: 1rem;">
+                            <div
+                                style="padding: 1.5rem; background: #fee2e2; border-radius: 8px; border-left: 4px solid var(--danger-color);">
+                                <h5 style="color: var(--danger-color); margin-bottom: 0.5rem;">Poor Performance (0-60)
+                                </h5>
+                                <div style="font-size: 1.5rem; font-weight: 700; color: var(--danger-color);">12-15%
+                                </div>
+                                <p style="font-size: 0.875rem; color: var(--text-secondary); margin-top: 0.5rem;">Price,
+                                    terms, SLAs improvements</p>
+                            </div>
+                            <div
+                                style="padding: 1.5rem; background: #fef3c7; border-radius: 8px; border-left: 4px solid var(--warning-color);">
+                                <h5 style="color: var(--warning-color); margin-bottom: 0.5rem;">Fair Performance (60-75)
+                                </h5>
+                                <div style="font-size: 1.5rem; font-weight: 700; color: var(--warning-color);">8-12%
+                                </div>
+                                <p style="font-size: 0.875rem; color: var(--text-secondary); margin-top: 0.5rem;">Volume
+                                    discounts, payment terms</p>
+                            </div>
+                            <div
+                                style="padding: 1.5rem; background: #d1fae5; border-radius: 8px; border-left: 4px solid var(--accent-color);">
+                                <h5 style="color: var(--accent-color); margin-bottom: 0.5rem;">Good Performance (75-85)
+                                </h5>
+                                <div style="font-size: 1.5rem; font-weight: 700; color: var(--accent-color);">5-8%</div>
+                                <p style="font-size: 0.875rem; color: var(--text-secondary); margin-top: 0.5rem;">Minor
+                                    optimizations</p>
+                            </div>
+                            <div
+                                style="padding: 1.5rem; background: #e0e7ff; border-radius: 8px; border-left: 4px solid var(--primary-color);">
+                                <h5 style="color: var(--primary-color); margin-bottom: 0.5rem;">Excellent (85-100)</h5>
+                                <div style="font-size: 1.5rem; font-weight: 700; color: var(--primary-color);">2-5%
+                                </div>
+                                <p style="font-size: 0.875rem; color: var(--text-secondary); margin-top: 0.5rem;">
+                                    Relationship benefits</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="strategic" class="tab-content">
+                <div class="calc-card">
+                    <h3 style="margin-bottom: 1rem;">Strategic Sourcing Method</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                        Identifies opportunities for fundamental changes in sourcing approach.
+                    </p>
+
+                    <div class="calc-formula">
+                        Strategic Savings = Σ(Opportunity Value × Success Probability × Time Factor)
+                    </div>
+
+                    <div style="margin-top: 2rem;">
+                        <h4 style="margin-bottom: 1rem;">Opportunity Types</h4>
+                        <div class="grid grid-2" style="gap: 1rem;">
+                            <div class="card">
+                                <h5 style="margin-bottom: 0.5rem;">Demand Management</h5>
+                                <div style="font-size: 1.25rem; font-weight: 600; color: var(--primary-color);">5-15%
+                                </div>
+                                <p style="font-size: 0.875rem; color: var(--text-secondary);">Through specification
+                                    optimization</p>
+                            </div>
+                            <div class="card">
+                                <h5 style="margin-bottom: 0.5rem;">Supply Base Optimization</h5>
+                                <div style="font-size: 1.25rem; font-weight: 600; color: var(--secondary-color);">8-12%
+                                </div>
+                                <p style="font-size: 0.875rem; color: var(--text-secondary);">Through strategic
+                                    partnerships</p>
+                            </div>
+                            <div class="card">
+                                <h5 style="margin-bottom: 0.5rem;">Total Cost of Ownership</h5>
+                                <div style="font-size: 1.25rem; font-weight: 600; color: var(--accent-color);">10-20%
+                                </div>
+                                <p style="font-size: 0.875rem; color: var(--text-secondary);">Through lifecycle analysis
+                                </p>
+                            </div>
+                            <div class="card">
+                                <h5 style="margin-bottom: 0.5rem;">Innovation Partnerships</h5>
+                                <div style="font-size: 1.25rem; font-weight: 600; color: var(--warning-color);">5-10%
+                                </div>
+                                <p style="font-size: 0.875rem; color: var(--text-secondary);">Through supplier-driven
+                                    improvements</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Detailed Calculations Section -->
+        <section id="calculations" class="section">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <div class="section-icon">🧮</div>
+                    Detailed Calculation Components
+                </h2>
+                <p class="section-subtitle">
+                    Understanding the components that drive savings calculations ensures accurate projections and
+                    realistic targets.
+                </p>
+            </div>
+
+            <div class="grid grid-2">
+                <div class="card">
+                    <h3 class="card-title">Administrative Cost Savings</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                        Beyond direct spend reduction, significant savings come from process improvements:
+                    </p>
+
+                    <div style="background: #f8fafc; border-radius: 8px; padding: 1rem; margin-bottom: 1rem;">
+                        <h4 style="font-size: 1rem; margin-bottom: 0.75rem;">Per-Vendor Administrative Costs</h4>
+                        <div style="display: grid; gap: 0.5rem;">
+                            <div style="display: flex; justify-content: space-between;">
+                                <span>Vendor Management</span>
+                                <span style="font-weight: 600;">$500-1,000/year</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span>Invoice Processing</span>
+                                <span style="font-weight: 600;">$50-100/invoice</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span>Contract Management</span>
+                                <span style="font-weight: 600;">$2,000-5,000/contract</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span>Compliance Monitoring</span>
+                                <span style="font-weight: 600;">$1,000-2,000/vendor</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="calc-formula">
+                        Example: 200 vendor reduction × $750 avg = $150,000 annual savings
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3 class="card-title">Risk-Adjusted Calculations</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                        Three estimate levels account for implementation risks:
+                    </p>
+
+                    <div style="margin-bottom: 1.5rem;">
+                        <div style="margin-bottom: 1rem;">
+                            <h4 style="font-size: 1rem; color: var(--accent-color);">Conservative (60-80% confidence)
+                            </h4>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 70%; background: var(--accent-color);">70%
+                                </div>
+                            </div>
+                            <p style="font-size: 0.875rem; color: var(--text-secondary); margin-top: 0.5rem;">
+                                Accounts for implementation challenges and partial adoption
+                            </p>
+                        </div>
+
+                        <div style="margin-bottom: 1rem;">
+                            <h4 style="font-size: 1rem; color: var(--warning-color);">Realistic (80-90% confidence)</h4>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 85%; background: var(--warning-color);">85%
+                                </div>
+                            </div>
+                            <p style="font-size: 0.875rem; color: var(--text-secondary); margin-top: 0.5rem;">
+                                Assumes good execution with moderate success
+                            </p>
+                        </div>
+
+                        <div>
+                            <h4 style="font-size: 1rem; color: var(--primary-color);">Optimistic (100% confidence)</h4>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 100%; background: var(--primary-color);">100%
+                                </div>
+                            </div>
+                            <p style="font-size: 0.875rem; color: var(--text-secondary); margin-top: 0.5rem;">
+                                Full implementation success with strong buy-in
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Time Value Chart -->
+            <div class="card" style="margin-top: 2rem;">
+                <h3 class="card-title">Implementation Timeline Impact</h3>
+                <div class="chart-container">
+                    <canvas id="timelineChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Real-World Examples Section -->
+        <section id="examples" class="section">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <div class="section-icon">💼</div>
+                    Real-World Examples
+                </h2>
+                <p class="section-subtitle">
+                    See how the calculations work in practice across different industries and company sizes.
+                </p>
+            </div>
+
+            <div class="grid grid-3">
+                <!-- Example 1 -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Manufacturing Co.</h3>
+                        <span class="card-badge badge-primary">$10M Spend</span>
+                    </div>
+
+                    <div style="margin-bottom: 1.5rem;">
+                        <div style="display: grid; gap: 0.5rem; color: var(--text-secondary);">
+                            <div><strong>Vendors:</strong> 1,200</div>
+                            <div><strong>Categories:</strong> 15</div>
+                            <div><strong>Tail Spend:</strong> 30% ($3M)</div>
+                        </div>
+                    </div>
+
+                    <div style="background: #f8fafc; border-radius: 8px; padding: 1rem; margin-bottom: 1rem;">
+                        <h4
+                            style="font-size: 0.875rem; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 0.5rem;">
+                            Savings Breakdown</h4>
+                        <div style="display: grid; gap: 0.5rem;">
+                            <div style="display: flex; justify-content: space-between;">
+                                <span>Tail Consolidation</span>
+                                <span style="font-weight: 600;">$900,000</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span>Category Optimization</span>
+                                <span style="font-weight: 600;">$300,000</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span>Contract Improvements</span>
+                                <span style="font-weight: 600;">$480,000</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div
+                        style="text-align: center; padding: 1rem; background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: white; border-radius: 8px;">
+                        <div style="font-size: 0.875rem;">Total Potential</div>
+                        <div style="font-size: 1.5rem; font-weight: 700;">$1,680,000</div>
+                        <div style="font-size: 0.875rem; opacity: 0.9;">16.8% of spend</div>
+                    </div>
+                </div>
+
+                <!-- Example 2 -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Healthcare System</h3>
+                        <span class="card-badge badge-success">$50M Spend</span>
+                    </div>
+
+                    <div style="margin-bottom: 1.5rem;">
+                        <div style="display: grid; gap: 0.5rem; color: var(--text-secondary);">
+                            <div><strong>Vendors:</strong> 3,500</div>
+                            <div><strong>Categories:</strong> 25</div>
+                            <div><strong>Medical Supplies:</strong> $15M</div>
+                        </div>
+                    </div>
+
+                    <div style="background: #f8fafc; border-radius: 8px; padding: 1rem; margin-bottom: 1rem;">
+                        <h4
+                            style="font-size: 0.875rem; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 0.5rem;">
+                            Savings Breakdown</h4>
+                        <div style="display: grid; gap: 0.5rem;">
+                            <div style="display: flex; justify-content: space-between;">
+                                <span>Tail + Admin</span>
+                                <span style="font-weight: 600;">$3,960,000</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span>Strategic Sourcing</span>
+                                <span style="font-weight: 600;">$2,700,000</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span>Standardization</span>
+                                <span style="font-weight: 600;">$2,000,000</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div
+                        style="text-align: center; padding: 1rem; background: linear-gradient(135deg, var(--accent-color), #059669); color: white; border-radius: 8px;">
+                        <div style="font-size: 0.875rem;">Total Potential</div>
+                        <div style="font-size: 1.5rem; font-weight: 700;">$8,660,000</div>
+                        <div style="font-size: 0.875rem; opacity: 0.9;">17.3% of spend</div>
+                    </div>
+                </div>
+
+                <!-- Example 3 -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Financial Services</h3>
+                        <span class="card-badge badge-warning">$25M Spend</span>
+                    </div>
+
+                    <div style="margin-bottom: 1.5rem;">
+                        <div style="display: grid; gap: 0.5rem; color: var(--text-secondary);">
+                            <div><strong>Vendors:</strong> 600</div>
+                            <div><strong>Categories:</strong> 8 (Services)</div>
+                            <div><strong>Professional Services:</strong> $12M</div>
+                        </div>
+                    </div>
+
+                    <div style="background: #f8fafc; border-radius: 8px; padding: 1rem; margin-bottom: 1rem;">
+                        <h4
+                            style="font-size: 0.875rem; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 0.5rem;">
+                            Savings Breakdown</h4>
+                        <div style="display: grid; gap: 0.5rem;">
+                            <div style="display: flex; justify-content: space-between;">
+                                <span>Services Consolidation</span>
+                                <span style="font-weight: 600;">$2,400,000</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span>Rate Standardization</span>
+                                <span style="font-weight: 600;">$1,200,000</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span>SOW Optimization</span>
+                                <span style="font-weight: 600;">$500,000</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div
+                        style="text-align: center; padding: 1rem; background: linear-gradient(135deg, var(--warning-color), #d97706); color: white; border-radius: 8px;">
+                        <div style="font-size: 0.875rem;">Total Potential</div>
+                        <div style="font-size: 1.5rem; font-weight: 700;">$4,100,000</div>
+                        <div style="font-size: 0.875rem; opacity: 0.9;">16.4% of spend</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Comparison Chart -->
+            <div class="card" style="margin-top: 2rem;">
+                <h3 class="card-title">Industry Comparison</h3>
+                <div class="chart-container">
+                    <canvas id="comparisonChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Implementation Section -->
+        <section id="implementation" class="section">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <div class="section-icon">🚀</div>
+                    Implementation Guidelines
+                </h2>
+                <p class="section-subtitle">
+                    A phased approach ensures quick wins while building toward transformational changes.
+                </p>
+            </div>
+
+            <div class="timeline">
+                <!-- Phase 1 -->
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <h3 style="color: var(--accent-color); margin-bottom: 0.5rem;">Phase 1: Quick Wins</h3>
+                        <p style="font-weight: 600; margin-bottom: 1rem;">0-3 months</p>
+                        <ul style="padding-left: 1.5rem; color: var(--text-secondary);">
+                            <li>P-Card implementation for tail spend</li>
+                            <li>Expired contract renewals</li>
+                            <li>Duplicate vendor consolidation</li>
+                        </ul>
+                        <div style="margin-top: 1rem; padding: 0.75rem; background: #d1fae5; border-radius: 6px;">
+                            <strong>Expected Savings:</strong> 5-8% immediate impact
+                        </div>
+                    </div>
+                    <div class="timeline-marker"></div>
+                    <div class="timeline-content" style="opacity: 0;"></div>
+                </div>
+
+                <!-- Phase 2 -->
+                <div class="timeline-item">
+                    <div class="timeline-content" style="opacity: 0;"></div>
+                    <div class="timeline-marker"></div>
+                    <div class="timeline-content">
+                        <h3 style="color: var(--warning-color); margin-bottom: 0.5rem;">Phase 2: Tactical Improvements
+                        </h3>
+                        <p style="font-weight: 600; margin-bottom: 1rem;">3-6 months</p>
+                        <ul style="padding-left: 1.5rem; color: var(--text-secondary);">
+                            <li>Category rationalization</li>
+                            <li>Volume aggregation</li>
+                            <li>Maverick spend reduction</li>
+                        </ul>
+                        <div style="margin-top: 1rem; padding: 0.75rem; background: #fef3c7; border-radius: 6px;">
+                            <strong>Expected Savings:</strong> 8-12% category optimization
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Phase 3 -->
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <h3 style="color: var(--primary-color); margin-bottom: 0.5rem;">Phase 3: Strategic
+                            Transformation</h3>
+                        <p style="font-weight: 600; margin-bottom: 1rem;">6-12 months</p>
+                        <ul style="padding-left: 1.5rem; color: var(--text-secondary);">
+                            <li>Strategic partnerships development</li>
+                            <li>Demand management programs</li>
+                            <li>Digital procurement implementation</li>
+                        </ul>
+                        <div style="margin-top: 1rem; padding: 0.75rem; background: #e0e7ff; border-radius: 6px;">
+                            <strong>Expected Savings:</strong> 15-20% strategic value
+                        </div>
+                    </div>
+                    <div class="timeline-marker"></div>
+                    <div class="timeline-content" style="opacity: 0;"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Interactive Calculator Section -->
+        <section id="calculator" class="section">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <div class="section-icon">🧮</div>
+                    Savings Potential Calculator
+                </h2>
+                <p class="section-subtitle">
+                    Calculate your organization's savings potential with our interactive tool.
+                </p>
+            </div>
+
+            <div class="savings-calculator">
+                <div class="grid grid-2">
+                    <div>
+                        <div class="calc-input-group">
+                            <label class="calc-label">Annual Spend ($)</label>
+                            <input type="number" class="calc-input" id="annualSpend" value="10000000"
+                                onchange="calculateSavings()">
+                        </div>
+
+                        <div class="calc-input-group">
+                            <label class="calc-label">Number of Vendors</label>
+                            <input type="number" class="calc-input" id="vendorCount" value="1000"
+                                onchange="calculateSavings()">
+                        </div>
+
+                        <div class="calc-input-group">
+                            <label class="calc-label">Tail Spend Percentage (%)</label>
+                            <input type="range" class="calc-slider" id="tailSpendPercent" min="10" max="40" value="25"
+                                onchange="updateSliderValue(this); calculateSavings()">
+                            <div
+                                style="display: flex; justify-content: space-between; font-size: 0.875rem; color: var(--text-secondary);">
+                                <span>10%</span>
+                                <span id="tailSpendValue">25%</span>
+                                <span>40%</span>
+                            </div>
+                        </div>
+
+                        <div class="calc-input-group">
+                            <label class="calc-label">Contract Coverage (%)</label>
+                            <input type="range" class="calc-slider" id="contractCoverage" min="40" max="90" value="65"
+                                onchange="updateSliderValue(this); calculateSavings()">
+                            <div
+                                style="display: flex; justify-content: space-between; font-size: 0.875rem; color: var(--text-secondary);">
+                                <span>40%</span>
+                                <span id="contractCoverageValue">65%</span>
+                                <span>90%</span>
+                            </div>
+                        </div>
+                        
+                        <div class="calc-input-group">
+                            <label class="calc-label">Seasonality Pattern</label>
+                            <select class="calc-input" id="seasonalityPattern" onchange="calculateSavings()">
+                                <option value="none">No Significant Seasonality</option>
+                                <option value="moderate">Moderate Seasonality (±20%)</option>
+                                <option value="high">High Seasonality (±40%)</option>
+                                <option value="extreme">Extreme Seasonality (±60%)</option>
+                            </select>
+                        </div>
+
+                        <button class="calc-button" onclick="calculateSavings()">
+                            <i class="fas fa-calculator"></i> Calculate Savings
+                        </button>
+                    </div>
+
+                    <div id="calculatorResults" class="calc-results">
+                        <h3 style="margin-bottom: 1rem;">Your Savings Potential</h3>
+                        <div style="text-align: center; margin-bottom: 2rem;">
+                            <div style="font-size: 0.875rem; color: var(--text-secondary);">Total Potential Savings
+                            </div>
+                            <div id="totalSavings"
+                                style="font-size: 2.5rem; font-weight: 700; color: var(--primary-color);">$0</div>
+                            <div id="savingsPercent" style="font-size: 1.125rem; color: var(--text-secondary);">0% of
+                                annual spend</div>
+                        </div>
+
+                        <div style="display: grid; gap: 1rem;">
+                            <div
+                                style="display: flex; justify-content: space-between; padding: 0.75rem; background: #f8fafc; border-radius: 6px;">
+                                <span>Tail Spend Consolidation</span>
+                                <span id="tailSavings" style="font-weight: 600;">$0</span>
+                            </div>
+                            <div
+                                style="display: flex; justify-content: space-between; padding: 0.75rem; background: #f8fafc; border-radius: 6px;">
+                                <span>Contract Optimization</span>
+                                <span id="contractSavings" style="font-weight: 600;">$0</span>
+                            </div>
+                            <div
+                                style="display: flex; justify-content: space-between; padding: 0.75rem; background: #f8fafc; border-radius: 6px;">
+                                <span>Administrative Savings</span>
+                                <span id="adminSavings" style="font-weight: 600;">$0</span>
+                            </div>
+                            <div
+                                style="display: flex; justify-content: space-between; padding: 0.75rem; background: #f8fafc; border-radius: 6px;">
+                                <span>Seasonality Optimization</span>
+                                <span id="seasonalitySavings" style="font-weight: 600;">$0</span>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 1.5rem; padding: 1rem; background: #e0e7ff; border-radius: 8px;">
+                            <div style="display: grid; gap: 0.5rem;">
+                                <div style="display: flex; justify-content: space-between;">
+                                    <span>Conservative Estimate</span>
+                                    <span id="conservativeEstimate" style="font-weight: 600;">$0</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between;">
+                                    <span>Realistic Estimate</span>
+                                    <span id="realisticEstimate" style="font-weight: 600;">$0</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Results Chart -->
+                <div class="card" style="margin-top: 2rem;">
+                    <h3 class="card-title">Savings Distribution</h3>
+                    <div class="chart-container">
+                        <canvas id="savingsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Scenario Comparison Tool Section -->
+        <section id="scenario-comparison" class="section">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <div class="section-icon">🔄</div>
+                    Scenario Comparison Tool
+                </h2>
+                <p class="section-subtitle">
+                    Compare different optimization scenarios to identify the best strategy for your organization.
+                </p>
+            </div>
+
+            <div class="scenario-comparison-container">
+                <!-- How to Use Panel -->
+                <div class="how-to-use-panel">
+                    <button class="how-to-use-toggle" onclick="toggleHowToUse()">
+                        <i class="fas fa-question-circle"></i>
+                        How to Use This Tool
+                    </button>
+
+                    <div id="howToUseContent" class="how-to-use-content">
+                        <div class="how-to-use-steps">
+                            <div class="how-to-step">
+                                <div class="step-number">1</div>
+                                <div class="step-content">
+                                    <div class="step-title">Define Your Scenarios</div>
+                                    <div class="step-description">
+                                        Create up to 3 different procurement optimization strategies. Each scenario
+                                        represents a different approach to achieving savings - from conservative to
+                                        aggressive transformations.
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="how-to-step">
+                                <div class="step-number">2</div>
+                                <div class="step-content">
+                                    <div class="step-title">Configure Each Scenario</div>
+                                    <div class="step-description">
+                                        For each scenario, select:
+                                        <ul style="margin-top: 0.5rem; padding-left: 1.5rem;">
+                                            <li><strong>Focus Area:</strong> Where to concentrate your efforts</li>
+                                            <li><strong>Implementation Speed:</strong> How quickly to execute</li>
+                                            <li><strong>Resources:</strong> Investment level required</li>
+                                            <li><strong>Risk Tolerance:</strong> How much risk you're willing to accept
+                                            </li>
+                                            <li><strong>Change Management:</strong> Level of organizational support</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="how-to-step">
+                                <div class="step-number">3</div>
+                                <div class="step-content">
+                                    <div class="step-title">Compare & Analyze</div>
+                                    <div class="step-description">
+                                        Click "Compare Scenarios" to see detailed projections including savings
+                                        potential, ROI, implementation costs, and success probability. Visual charts
+                                        help you understand the trade-offs.
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="how-to-step">
+                                <div class="step-number">4</div>
+                                <div class="step-content">
+                                    <div class="step-title">Review Recommendations</div>
+                                    <div class="step-description">
+                                        Our AI engine analyzes all scenarios and recommends the optimal approach based
+                                        on your specific situation, balancing risk, reward, and implementation
+                                        feasibility.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pro-tip">
+                            <div class="pro-tip-title">
+                                <i class="fas fa-lightbulb"></i>
+                                Pro Tips:
+                            </div>
+                            <ul style="padding-left: 1.5rem; margin: 0;">
+                                <li>Start with realistic estimates - it's better to under-promise and over-deliver</li>
+                                <li>Consider your organization's change readiness when setting risk tolerance</li>
+                                <li>The tool uses your annual spend from the calculator above - make sure it's accurate
+                                </li>
+                                <li>Try different combinations to find the sweet spot for your organization</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Scenario Input Panel -->
+                <div class="card" style="margin-bottom: 2rem;">
+                    <h3 class="card-title">Define Your Scenarios</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                        Create up to 3 different scenarios to compare potential outcomes based on different strategies
+                        and implementation approaches.
+                    </p>
+
+                    <div class="scenario-tabs">
+                        <button class="scenario-tab active" onclick="switchScenario(1)">Scenario 1</button>
+                        <button class="scenario-tab" onclick="switchScenario(2)">Scenario 2</button>
+                        <button class="scenario-tab" onclick="switchScenario(3)">Scenario 3</button>
+                    </div>
+
+                    <!-- Scenario 1 -->
+                    <div id="scenario1" class="scenario-content active">
+                        <div class="grid grid-2" style="gap: 1.5rem; margin-top: 1.5rem;">
+                            <div>
+                                <div class="calc-input-group">
+                                    <label class="calc-label">Scenario Name</label>
+                                    <input type="text" class="calc-input" id="scenario1Name"
+                                        value="Conservative Approach" onchange="updateScenarioComparison()">
+                                </div>
+
+                                <div class="calc-input-group">
+                                    <label class="calc-label">
+                                        <div class="tooltip-wrapper">
+                                            <span>Focus Area</span>
+                                            <span class="tooltip-icon">?</span>
+                                            <div class="tooltip-content">
+                                                Choose where to concentrate your optimization efforts. Each area has
+                                                different savings potential and implementation complexity.
+                                            </div>
+                                        </div>
+                                    </label>
+                                    <select class="calc-input" id="scenario1Focus"
+                                        onchange="updateScenarioComparison()">
+                                        <option value="balanced">Balanced Approach</option>
+                                        <option value="tail">Tail Spend Focus</option>
+                                        <option value="strategic">Strategic Sourcing</option>
+                                        <option value="contract">Contract Optimization</option>
+                                        <option value="quick">Quick Wins Only</option>
+                                    </select>
+                                </div>
+
+                                <div class="calc-input-group">
+                                    <label class="calc-label">
+                                        <div class="tooltip-wrapper">
+                                            <span>Implementation Speed</span>
+                                            <span class="tooltip-icon">?</span>
+                                            <div class="tooltip-content">
+                                                Faster implementation can capture savings sooner but may increase costs
+                                                and reduce success probability. Choose based on your urgency.
+                                            </div>
+                                        </div>
+                                    </label>
+                                    <select class="calc-input" id="scenario1Speed"
+                                        onchange="updateScenarioComparison()">
+                                        <option value="aggressive">Aggressive (6 months)</option>
+                                        <option value="moderate" selected>Moderate (12 months)</option>
+                                        <option value="conservative">Conservative (18 months)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div class="calc-input-group">
+                                    <label class="calc-label">
+                                        <div class="tooltip-wrapper">
+                                            <span>Resource Investment</span>
+                                            <span class="tooltip-icon">?</span>
+                                            <div class="tooltip-content">
+                                                Higher investment typically yields better results but increases upfront
+                                                costs. Consider your budget and available expertise.
+                                            </div>
+                                        </div>
+                                    </label>
+                                    <select class="calc-input" id="scenario1Resources"
+                                        onchange="updateScenarioComparison()">
+                                        <option value="minimal">Minimal (Existing team)</option>
+                                        <option value="moderate" selected>Moderate (Some contractors)</option>
+                                        <option value="significant">Significant (Full team)</option>
+                                    </select>
+                                </div>
+
+                                <div class="calc-input-group">
+                                    <label class="calc-label">
+                                        <div class="tooltip-wrapper">
+                                            <span>Risk Tolerance</span>
+                                            <span class="tooltip-icon">?</span>
+                                            <div class="tooltip-content">
+                                                Higher risk can lead to greater savings but lower success probability.
+                                                Set based on your organization's appetite for change and disruption.
+                                            </div>
+                                        </div>
+                                    </label>
+                                    <input type="range" class="calc-slider" id="scenario1Risk" min="0" max="100"
+                                        value="30"
+                                        onchange="updateScenarioRisk(1, this.value); updateScenarioComparison()">
+                                    <div
+                                        style="display: flex; justify-content: space-between; font-size: 0.875rem; color: var(--text-secondary);">
+                                        <span>Low Risk</span>
+                                        <span id="scenario1RiskValue">30%</span>
+                                        <span>High Risk</span>
+                                    </div>
+                                </div>
+
+                                <div class="calc-input-group">
+                                    <label class="calc-label">
+                                        <div class="tooltip-wrapper">
+                                            <span>Change Management</span>
+                                            <span class="tooltip-icon">?</span>
+                                            <div class="tooltip-content">
+                                                Strong change management increases success probability but adds cost.
+                                                Essential for organization-wide transformations.
+                                            </div>
+                                        </div>
+                                    </label>
+                                    <select class="calc-input" id="scenario1Change"
+                                        onchange="updateScenarioComparison()">
+                                        <option value="basic">Basic Communication</option>
+                                        <option value="standard" selected>Standard Program</option>
+                                        <option value="comprehensive">Comprehensive Support</option>
+                                    </select>
+                                </div>
+
+                                <div class="calc-input-group">
+                                    <label class="calc-label">
+                                        <div class="tooltip-wrapper">
+                                            <span>Seasonality Pattern</span>
+                                            <span class="tooltip-icon">?</span>
+                                            <div class="tooltip-content">
+                                                Consider if your business has seasonal demand patterns that could be optimized
+                                            </div>
+                                        </div>
+                                    </label>
+                                    <select class="calc-input" id="scenario1Seasonality"
+                                        onchange="updateScenarioComparison()">
+                                        <option value="none">No Significant Seasonality</option>
+                                        <option value="moderate">Moderate Seasonality (±20%)</option>
+                                        <option value="high">High Seasonality (±40%)</option>
+                                        <option value="extreme">Extreme Seasonality (±60%)</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Scenario 2 -->
+                    <div id="scenario2" class="scenario-content">
+                        <div class="grid grid-2" style="gap: 1.5rem; margin-top: 1.5rem;">
+                            <div>
+                                <div class="calc-input-group">
+                                    <label class="calc-label">Scenario Name</label>
+                                    <input type="text" class="calc-input" id="scenario2Name" value="Balanced Strategy"
+                                        onchange="updateScenarioComparison()">
+                                </div>
+
+                                <div class="calc-input-group">
+                                    <label class="calc-label">Focus Area</label>
+                                    <select class="calc-input" id="scenario2Focus"
+                                        onchange="updateScenarioComparison()">
+                                        <option value="balanced" selected>Balanced Approach</option>
+                                        <option value="tail">Tail Spend Focus</option>
+                                        <option value="strategic">Strategic Sourcing</option>
+                                        <option value="contract">Contract Optimization</option>
+                                        <option value="quick">Quick Wins Only</option>
+                                    </select>
+                                </div>
+
+                                <div class="calc-input-group">
+                                    <label class="calc-label">Implementation Speed</label>
+                                    <select class="calc-input" id="scenario2Speed"
+                                        onchange="updateScenarioComparison()">
+                                        <option value="aggressive" selected>Aggressive (6 months)</option>
+                                        <option value="moderate">Moderate (12 months)</option>
+                                        <option value="conservative">Conservative (18 months)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div class="calc-input-group">
+                                    <label class="calc-label">Resource Investment</label>
+                                    <select class="calc-input" id="scenario2Resources"
+                                        onchange="updateScenarioComparison()">
+                                        <option value="minimal">Minimal (Existing team)</option>
+                                        <option value="moderate" selected>Moderate (Some contractors)</option>
+                                        <option value="significant">Significant (Full team)</option>
+                                    </select>
+                                </div>
+
+                                <div class="calc-input-group">
+                                    <label class="calc-label">Risk Tolerance</label>
+                                    <input type="range" class="calc-slider" id="scenario2Risk" min="0" max="100"
+                                        value="50"
+                                        onchange="updateScenarioRisk(2, this.value); updateScenarioComparison()">
+                                    <div
+                                        style="display: flex; justify-content: space-between; font-size: 0.875rem; color: var(--text-secondary);">
+                                        <span>Low Risk</span>
+                                        <span id="scenario2RiskValue">50%</span>
+                                        <span>High Risk</span>
+                                    </div>
+                                </div>
+
+                                <div class="calc-input-group">
+                                    <label class="calc-label">Change Management</label>
+                                    <select class="calc-input" id="scenario2Change"
+                                        onchange="updateScenarioComparison()">
+                                        <option value="basic">Basic Communication</option>
+                                        <option value="standard" selected>Standard Program</option>
+                                        <option value="comprehensive">Comprehensive Support</option>
+                                    </select>
+                                </div>
+
+                                <div class="calc-input-group">
+                                    <label class="calc-label">
+                                        <div class="tooltip-wrapper">
+                                            <span>Seasonality Pattern</span>
+                                            <span class="tooltip-icon">?</span>
+                                            <div class="tooltip-content">
+                                                Consider if your business has seasonal demand patterns that could be optimized
+                                            </div>
+                                        </div>
+                                    </label>
+                                    <select class="calc-input" id="scenario2Seasonality"
+                                        onchange="updateScenarioComparison()">
+                                        <option value="none">No Significant Seasonality</option>
+                                        <option value="moderate">Moderate Seasonality (±20%)</option>
+                                        <option value="high">High Seasonality (±40%)</option>
+                                        <option value="extreme">Extreme Seasonality (±60%)</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Scenario 3 -->
+                    <div id="scenario3" class="scenario-content">
+                        <div class="grid grid-2" style="gap: 1.5rem; margin-top: 1.5rem;">
+                            <div>
+                                <div class="calc-input-group">
+                                    <label class="calc-label">Scenario Name</label>
+                                    <input type="text" class="calc-input" id="scenario3Name"
+                                        value="Aggressive Transformation" onchange="updateScenarioComparison()">
+                                </div>
+
+                                <div class="calc-input-group">
+                                    <label class="calc-label">Focus Area</label>
+                                    <select class="calc-input" id="scenario3Focus"
+                                        onchange="updateScenarioComparison()">
+                                        <option value="balanced">Balanced Approach</option>
+                                        <option value="tail">Tail Spend Focus</option>
+                                        <option value="strategic" selected>Strategic Sourcing</option>
+                                        <option value="contract">Contract Optimization</option>
+                                        <option value="quick">Quick Wins Only</option>
+                                    </select>
+                                </div>
+
+                                <div class="calc-input-group">
+                                    <label class="calc-label">Implementation Speed</label>
+                                    <select class="calc-input" id="scenario3Speed"
+                                        onchange="updateScenarioComparison()">
+                                        <option value="aggressive" selected>Aggressive (6 months)</option>
+                                        <option value="moderate">Moderate (12 months)</option>
+                                        <option value="conservative">Conservative (18 months)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div class="calc-input-group">
+                                    <label class="calc-label">Resource Investment</label>
+                                    <select class="calc-input" id="scenario3Resources"
+                                        onchange="updateScenarioComparison()">
+                                        <option value="minimal">Minimal (Existing team)</option>
+                                        <option value="moderate">Moderate (Some contractors)</option>
+                                        <option value="significant" selected>Significant (Full team)</option>
+                                    </select>
+                                </div>
+
+                                <div class="calc-input-group">
+                                    <label class="calc-label">Risk Tolerance</label>
+                                    <input type="range" class="calc-slider" id="scenario3Risk" min="0" max="100"
+                                        value="70"
+                                        onchange="updateScenarioRisk(3, this.value); updateScenarioComparison()">
+                                    <div
+                                        style="display: flex; justify-content: space-between; font-size: 0.875rem; color: var(--text-secondary);">
+                                        <span>Low Risk</span>
+                                        <span id="scenario3RiskValue">70%</span>
+                                        <span>High Risk</span>
+                                    </div>
+                                </div>
+
+                                <div class="calc-input-group">
+                                    <label class="calc-label">Change Management</label>
+                                    <select class="calc-input" id="scenario3Change"
+                                        onchange="updateScenarioComparison()">
+                                        <option value="basic">Basic Communication</option>
+                                        <option value="standard">Standard Program</option>
+                                        <option value="comprehensive" selected>Comprehensive Support</option>
+                                    </select>
+                                </div>
+
+                                <div class="calc-input-group">
+                                    <label class="calc-label">
+                                        <div class="tooltip-wrapper">
+                                            <span>Seasonality Pattern</span>
+                                            <span class="tooltip-icon">?</span>
+                                            <div class="tooltip-content">
+                                                Consider if your business has seasonal demand patterns that could be optimized
+                                            </div>
+                                        </div>
+                                    </label>
+                                    <select class="calc-input" id="scenario3Seasonality"
+                                        onchange="updateScenarioComparison()">
+                                        <option value="none">No Significant Seasonality</option>
+                                        <option value="moderate">Moderate Seasonality (±20%)</option>
+                                        <option value="high">High Seasonality (±40%)</option>
+                                        <option value="extreme">Extreme Seasonality (±60%)</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="text-align: center; margin-top: 2rem;">
+                        <button class="calc-button" onclick="runScenarioComparison()">
+                            <i class="fas fa-chart-line"></i> Compare Scenarios
+                        </button>
+                    </div>
+
+                    <!-- Quick Reference Guide -->
+                    <div
+                        style="margin-top: 2rem; padding: 1.5rem; background: rgba(99, 102, 241, 0.05); border-radius: 12px; border: 1px solid rgba(99, 102, 241, 0.2);">
+                        <h4 style="margin-bottom: 1rem; color: var(--primary-color);">
+                            <i class="fas fa-info-circle"></i> Quick Reference Guide
+                        </h4>
+                        <div class="grid grid-2" style="gap: 2rem; font-size: 0.9rem;">
+                            <div>
+                                <h5 style="margin-bottom: 0.5rem; color: var(--text-primary);">Focus Area Impact:</h5>
+                                <ul style="padding-left: 1.5rem; color: var(--text-secondary); line-height: 1.8;">
+                                    <li><strong>Balanced:</strong> 15% savings, moderate complexity</li>
+                                    <li><strong>Tail Spend:</strong> 18% savings, quick implementation</li>
+                                    <li><strong>Strategic:</strong> 22% savings, longer timeline</li>
+                                    <li><strong>Contract:</strong> 16% savings, medium complexity</li>
+                                    <li><strong>Quick Wins:</strong> 8% savings, immediate results</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h5 style="margin-bottom: 0.5rem; color: var(--text-primary);">Key Considerations:</h5>
+                                <ul style="padding-left: 1.5rem; color: var(--text-secondary); line-height: 1.8;">
+                                    <li><strong>Speed:</strong> Faster = higher cost, lower success rate</li>
+                                    <li><strong>Resources:</strong> More investment = better results</li>
+                                    <li><strong>Risk:</strong> Higher risk = higher potential savings</li>
+                                    <li><strong>Change Mgmt:</strong> Better support = higher success</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Comparison Results -->
+                <div id="scenarioResults" style="display: none;">
+                    <!-- Summary Cards -->
+                    <div class="grid grid-3" style="margin-bottom: 2rem;">
+                        <div class="scenario-result-card" id="scenario1Result">
+                            <h4 class="scenario-result-title">Scenario 1</h4>
+                            <div class="scenario-result-value">$0</div>
+                            <div class="scenario-result-metrics">
+                                <div class="metric-item">
+                                    <span class="metric-label">ROI</span>
+                                    <span class="metric-value">0%</span>
+                                </div>
+                                <div class="metric-item">
+                                    <span class="metric-label">Payback</span>
+                                    <span class="metric-value">0 mo</span>
+                                </div>
+                                <div class="metric-item">
+                                    <span class="metric-label">Risk</span>
+                                    <span class="metric-value">Low</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="scenario-result-card recommended" id="scenario2Result">
+                            <div class="recommended-badge">Recommended</div>
+                            <h4 class="scenario-result-title">Scenario 2</h4>
+                            <div class="scenario-result-value">$0</div>
+                            <div class="scenario-result-metrics">
+                                <div class="metric-item">
+                                    <span class="metric-label">ROI</span>
+                                    <span class="metric-value">0%</span>
+                                </div>
+                                <div class="metric-item">
+                                    <span class="metric-label">Payback</span>
+                                    <span class="metric-value">0 mo</span>
+                                </div>
+                                <div class="metric-item">
+                                    <span class="metric-label">Risk</span>
+                                    <span class="metric-value">Medium</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="scenario-result-card" id="scenario3Result">
+                            <h4 class="scenario-result-title">Scenario 3</h4>
+                            <div class="scenario-result-value">$0</div>
+                            <div class="scenario-result-metrics">
+                                <div class="metric-item">
+                                    <span class="metric-label">ROI</span>
+                                    <span class="metric-value">0%</span>
+                                </div>
+                                <div class="metric-item">
+                                    <span class="metric-label">Payback</span>
+                                    <span class="metric-value">0 mo</span>
+                                </div>
+                                <div class="metric-item">
+                                    <span class="metric-label">Risk</span>
+                                    <span class="metric-value">High</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Comparison Charts -->
+                    <div class="grid grid-2" style="gap: 2rem; margin-bottom: 2rem;">
+                        <div class="card">
+                            <h3 class="card-title">Savings Over Time</h3>
+                            <div class="chart-container">
+                                <canvas id="scenarioTimelineChart"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <h3 class="card-title">Risk vs Reward Analysis</h3>
+                            <div class="chart-container">
+                                <canvas id="riskRewardChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Detailed Comparison Table -->
+                    <div class="card">
+                        <h3 class="card-title">Detailed Scenario Comparison</h3>
+                        <div class="table-container">
+                            <table id="scenarioComparisonTable">
+                                <thead>
+                                    <tr>
+                                        <th>Metric</th>
+                                        <th>Scenario 1</th>
+                                        <th>Scenario 2</th>
+                                        <th>Scenario 3</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>Total Savings (3 Year)</strong></td>
+                                        <td id="s1TotalSavings">$0</td>
+                                        <td id="s2TotalSavings">$0</td>
+                                        <td id="s3TotalSavings">$0</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Implementation Cost</strong></td>
+                                        <td id="s1Cost">$0</td>
+                                        <td id="s2Cost">$0</td>
+                                        <td id="s3Cost">$0</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Net Benefit</strong></td>
+                                        <td id="s1NetBenefit">$0</td>
+                                        <td id="s2NetBenefit">$0</td>
+                                        <td id="s3NetBenefit">$0</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Time to First Savings</strong></td>
+                                        <td id="s1TimeToSavings">0 months</td>
+                                        <td id="s2TimeToSavings">0 months</td>
+                                        <td id="s3TimeToSavings">0 months</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Break-even Point</strong></td>
+                                        <td id="s1Breakeven">0 months</td>
+                                        <td id="s2Breakeven">0 months</td>
+                                        <td id="s3Breakeven">0 months</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Success Probability</strong></td>
+                                        <td id="s1Success">0%</td>
+                                        <td id="s2Success">0%</td>
+                                        <td id="s3Success">0%</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Recommendation Engine -->
+                    <div class="card" style="margin-top: 2rem; background: linear-gradient(135deg, #f0f9ff, #e0f2fe);">
+                        <h3 class="card-title">
+                            <i class="fas fa-lightbulb" style="color: var(--warning-color);"></i>
+                            AI-Powered Recommendation
+                        </h3>
+                        <div id="scenarioRecommendation" style="padding: 1rem;">
+                            <p style="font-size: 1.1rem; line-height: 1.8; color: var(--text-primary);">
+                                Based on your inputs and organizational profile, we recommend <strong
+                                    id="recommendedScenario">Scenario 2</strong>.
+                            </p>
+                            <div style="margin-top: 1rem;">
+                                <h4 style="margin-bottom: 0.5rem;">Key Reasons:</h4>
+                                <ul id="recommendationReasons"
+                                    style="padding-left: 1.5rem; color: var(--text-secondary);">
+                                    <li>Optimal balance between risk and reward</li>
+                                    <li>Achievable timeline with existing resources</li>
+                                    <li>Strong ROI with manageable implementation costs</li>
+                                </ul>
+                            </div>
+                            <div
+                                style="margin-top: 1rem; padding: 1rem; background: rgba(99, 102, 241, 0.1); border-radius: 8px;">
+                                <h4 style="margin-bottom: 0.5rem; color: var(--primary-color);">Next Steps:</h4>
+                                <ol id="nextSteps" style="padding-left: 1.5rem; color: var(--text-secondary);">
+                                    <li>Review the detailed comparison metrics</li>
+                                    <li>Align stakeholders on the chosen approach</li>
+                                    <li>Develop a detailed implementation roadmap</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Best Practices Section -->
+        <section id="best-practices" class="section">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <div class="section-icon">✨</div>
+                    Best Practices
+                </h2>
+                <p class="section-subtitle">
+                    Key considerations for successful implementation and achieving projected savings.
+                </p>
+            </div>
+
+            <div class="grid grid-2">
+                <div class="card">
+                    <h3 class="card-title">
+                        <i class="fas fa-database" style="color: var(--primary-color);"></i>
+                        Data Quality Considerations
+                    </h3>
+                    <ul style="padding-left: 1.5rem; color: var(--text-secondary); margin-top: 1rem;">
+                        <li><strong>Completeness:</strong> Ensure all spend data is captured</li>
+                        <li><strong>Accuracy:</strong> Validate vendor names and amounts</li>
+                        <li><strong>Categorization:</strong> Proper category assignment is crucial</li>
+                        <li><strong>Time Period:</strong> Use 12-month rolling data for accuracy</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h3 class="card-title">
+                        <i class="fas fa-users" style="color: var(--accent-color);"></i>
+                        Stakeholder Communication
+                    </h3>
+                    <ul style="padding-left: 1.5rem; color: var(--text-secondary); margin-top: 1rem;">
+                        <li>Present conservative estimates to executives</li>
+                        <li>Use realistic estimates for planning</li>
+                        <li>Share optimistic scenarios to inspire teams</li>
+                        <li>Always include implementation timelines</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h3 class="card-title">
+                        <i class="fas fa-check-circle" style="color: var(--warning-color);"></i>
+                        Success Factors
+                    </h3>
+                    <ul style="padding-left: 1.5rem; color: var(--text-secondary); margin-top: 1rem;">
+                        <li><strong>Executive Sponsorship:</strong> Critical for strategic initiatives</li>
+                        <li><strong>Change Management:</strong> Address resistance proactively</li>
+                        <li><strong>Quick Wins:</strong> Build momentum with early successes</li>
+                        <li><strong>Measurement:</strong> Track actual vs. projected savings</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h3 class="card-title">
+                        <i class="fas fa-exclamation-triangle" style="color: var(--danger-color);"></i>
+                        Common Pitfalls to Avoid
+                    </h3>
+                    <ul style="padding-left: 1.5rem; color: var(--text-secondary); margin-top: 1rem;">
+                        <li>Over-promising on savings potential</li>
+                        <li>Underestimating implementation effort</li>
+                        <li>Ignoring change management needs</li>
+                        <li>Focusing only on price reduction</li>
+                        <li>Neglecting supplier relationships</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- ROI Calculator -->
+            <div class="card" style="margin-top: 2rem;">
+                <h3 class="card-title">ROI Calculation Template</h3>
+                <div class="calc-formula">
+                    Year 1 Savings: Direct Savings + Administrative Savings - Implementation Costs
+                    Year 2+ Savings: Direct Savings + Administrative Savings - Ongoing Costs
+
+                    ROI = (Total Savings - Total Costs) / Total Costs × 100%
+                    Payback Period = Implementation Costs / Annual Savings
+                </div>
+
+                <div style="margin-top: 1.5rem;">
+                    <h4 style="margin-bottom: 1rem;">Typical ROI Metrics</h4>
+                    <div class="grid grid-3" style="gap: 1rem;">
+                        <div style="text-align: center; padding: 1rem; background: #f8fafc; border-radius: 8px;">
+                            <div style="font-size: 2rem; font-weight: 700; color: var(--primary-color);">3-5x</div>
+                            <div style="font-size: 0.875rem; color: var(--text-secondary);">First Year ROI</div>
+                        </div>
+                        <div style="text-align: center; padding: 1rem; background: #f8fafc; border-radius: 8px;">
+                            <div style="font-size: 2rem; font-weight: 700; color: var(--accent-color);">3-6mo</div>
+                            <div style="font-size: 0.875rem; color: var(--text-secondary);">Payback Period</div>
+                        </div>
+                        <div style="text-align: center; padding: 1rem; background: #f8fafc; border-radius: 8px;">
+                            <div style="font-size: 2rem; font-weight: 700; color: var(--warning-color);">10-15x</div>
+                            <div style="font-size: 0.875rem; color: var(--text-secondary);">5-Year ROI</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Confidence Matrix -->
+            <div class="card" style="margin-top: 2rem;">
+                <h3 class="card-title">Calculation Confidence Matrix</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Data Quality</th>
+                            <th>Implementation Capability</th>
+                            <th>Recommended Confidence</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>High</td>
+                            <td>Strong</td>
+                            <td><span style="color: var(--accent-color); font-weight: 600;">90-100%</span></td>
+                        </tr>
+                        <tr>
+                            <td>High</td>
+                            <td>Moderate</td>
+                            <td><span style="color: var(--warning-color); font-weight: 600;">80-90%</span></td>
+                        </tr>
+                        <tr>
+                            <td>High</td>
+                            <td>Weak</td>
+                            <td><span style="color: var(--danger-color); font-weight: 600;">70-80%</span></td>
+                        </tr>
+                        <tr>
+                            <td>Medium</td>
+                            <td>Strong</td>
+                            <td><span style="color: var(--warning-color); font-weight: 600;">80-90%</span></td>
+                        </tr>
+                        <tr>
+                            <td>Medium</td>
+                            <td>Moderate</td>
+                            <td><span style="color: var(--danger-color); font-weight: 600;">70-80%</span></td>
+                        </tr>
+                        <tr>
+                            <td>Medium</td>
+                            <td>Weak</td>
+                            <td><span style="color: var(--text-secondary); font-weight: 600;">60-70%</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <!-- Back to Top Button -->
+    <a href="#" class="back-to-top" id="backToTop">
+        <i class="fas fa-arrow-up"></i>
+    </a>
+
+    <script>
+        // Initialize charts when page loads
+        document.addEventListener('DOMContentLoaded', function () {
+            initializeCharts();
+            calculateSavings();
+
+            // Smooth scrolling for navigation
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href').substring(1);
+                    const target = document.getElementById(targetId);
+
+                    if (target) {
+                        window.scrollTo({
+                            top: target.offsetTop - 80,
+                            behavior: 'smooth'
+                        });
+
+                        // Update active nav item
+                        document.querySelectorAll('.nav-item').forEach(navItem => {
+                            navItem.classList.remove('active');
+                        });
+                        this.classList.add('active');
+                    }
+                });
+            });
+
+            // Back to top button
+            const backToTop = document.getElementById('backToTop');
+            window.addEventListener('scroll', function () {
+                if (window.pageYOffset > 300) {
+                    backToTop.classList.add('visible');
+                } else {
+                    backToTop.classList.remove('visible');
+                }
+            });
+
+            backToTop.addEventListener('click', function (e) {
+                e.preventDefault();
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            });
+
+            // Animate sections on scroll
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.animationDelay = '0.1s';
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.section').forEach(section => {
+                observer.observe(section);
+            });
+        });
+
+        // Tab functionality
+        function showTab(tabName, button) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+
+            // Remove active class from all tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Show selected tab content
+            document.getElementById(tabName).classList.add('active');
+
+            // Add active class to clicked tab
+            if (button) {
+                button.classList.add('active');
+            }
+        }
+
+        // Update slider values
+        function updateSliderValue(slider) {
+            const valueSpan = document.getElementById(slider.id + 'Value');
+            if (valueSpan) {
+                valueSpan.textContent = slider.value + '%';
+            }
+        }
+
+        // Savings Calculator
+        function calculateSavings() {
+            const annualSpend = parseFloat(document.getElementById('annualSpend').value) || 0;
+            const vendorCount = parseInt(document.getElementById('vendorCount').value) || 0;
+            const tailSpendPercent = parseFloat(document.getElementById('tailSpendPercent').value) / 100;
+            const contractCoverage = parseFloat(document.getElementById('contractCoverage').value) / 100;
+            const seasonalityPattern = document.getElementById('seasonalityPattern').value;
+
+            // Calculate tail spend savings
+            const tailSpend = annualSpend * tailSpendPercent;
+            const tailSavings = tailSpend * 0.15; // 15% average savings on tail spend
+
+            // Calculate contract optimization savings
+            const offContractSpend = annualSpend * (1 - contractCoverage);
+            const contractSavings = offContractSpend * 0.12; // 12% savings on off-contract spend
+
+            // Calculate administrative savings
+            const vendorsToEliminate = Math.floor(vendorCount * 0.3); // Assume 30% reduction
+            const adminSavings = vendorsToEliminate * 1500; // $1,500 per vendor
+
+            // Calculate seasonality savings
+            let seasonalitySavings = 0;
+            let seasonalityRate = 0;
+            switch(seasonalityPattern) {
+                case 'moderate':
+                    seasonalityRate = 0.03; // 3% for moderate seasonality
+                    break;
+                case 'high':
+                    seasonalityRate = 0.05; // 5% for high seasonality
+                    break;
+                case 'extreme':
+                    seasonalityRate = 0.08; // 8% for extreme seasonality
+                    break;
+                default:
+                    seasonalityRate = 0; // No seasonality savings
+            }
+            seasonalitySavings = annualSpend * seasonalityRate;
+
+            // Total savings
+            const totalSavings = tailSavings + contractSavings + adminSavings + seasonalitySavings;
+            const savingsPercent = (totalSavings / annualSpend) * 100;
+
+            // Update UI
+            document.getElementById('totalSavings').textContent = '$' + totalSavings.toLocaleString('en-US', { maximumFractionDigits: 0 });
+            document.getElementById('savingsPercent').textContent = savingsPercent.toFixed(1) + '% of annual spend';
+            document.getElementById('tailSavings').textContent = '$' + tailSavings.toLocaleString('en-US', { maximumFractionDigits: 0 });
+            document.getElementById('contractSavings').textContent = '$' + contractSavings.toLocaleString('en-US', { maximumFractionDigits: 0 });
+            document.getElementById('adminSavings').textContent = '$' + adminSavings.toLocaleString('en-US', { maximumFractionDigits: 0 });
+
+            // Add seasonality savings display
+            const seasonalityElement = document.getElementById('seasonalitySavings');
+            if (seasonalityElement) {
+                seasonalityElement.textContent = '$' + seasonalitySavings.toLocaleString('en-US', { maximumFractionDigits: 0 });
+            }
+
+            // Risk-adjusted estimates
+            document.getElementById('conservativeEstimate').textContent = '$' + (totalSavings * 0.7).toLocaleString('en-US', { maximumFractionDigits: 0 });
+            document.getElementById('realisticEstimate').textContent = '$' + (totalSavings * 0.85).toLocaleString('en-US', { maximumFractionDigits: 0 });
+
+            // Update savings distribution chart
+            updateSavingsChart(tailSavings, contractSavings, adminSavings, seasonalitySavings);
+        }
+
+        // Initialize Charts
+        function initializeCharts() {
+            // Timeline Impact Chart
+            const timelineCtx = document.getElementById('timelineChart');
+            if (timelineCtx) {
+                new Chart(timelineCtx, {
+                    type: 'line',
+                    data: {
+                        labels: ['0', '3 months', '6 months', '9 months', '12 months', '18 months', '24 months'],
+                        datasets: [{
+                            label: 'Cumulative Savings',
+                            data: [0, 5, 12, 18, 25, 35, 45],
+                            borderColor: '#6366f1',
+                            backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        }, {
+                            label: 'Implementation Cost',
+                            data: [10, 8, 5, 3, 2, 1, 0.5],
+                            borderColor: '#ef4444',
+                            backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                            },
+                            title: {
+                                display: true,
+                                text: 'Savings vs Implementation Cost Over Time'
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: function (value) {
+                                        return value + '%';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Industry Comparison Chart
+            const comparisonCtx = document.getElementById('comparisonChart');
+            if (comparisonCtx) {
+                new Chart(comparisonCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Manufacturing', 'Healthcare', 'Financial Services', 'Retail', 'Technology'],
+                        datasets: [{
+                            label: 'Average Savings %',
+                            data: [16.8, 17.3, 16.4, 14.2, 15.5],
+                            backgroundColor: [
+                                'rgba(99, 102, 241, 0.8)',
+                                'rgba(16, 185, 129, 0.8)',
+                                'rgba(245, 158, 11, 0.8)',
+                                'rgba(139, 92, 246, 0.8)',
+                                'rgba(236, 72, 153, 0.8)'
+                            ],
+                            borderColor: [
+                                '#6366f1',
+                                '#10b981',
+                                '#f59e0b',
+                                '#8b5cf6',
+                                '#ec4899'
+                            ],
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            title: {
+                                display: true,
+                                text: 'Average Savings Potential by Industry'
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: function (value) {
+                                        return value + '%';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        // Toggle How to Use Panel
+        function toggleHowToUse() {
+            const content = document.getElementById('howToUseContent');
+            const button = document.querySelector('.how-to-use-toggle');
+
+            if (content.classList.contains('active')) {
+                content.classList.remove('active');
+                button.innerHTML = '<i class="fas fa-question-circle"></i> How to Use This Tool';
+            } else {
+                content.classList.add('active');
+                button.innerHTML = '<i class="fas fa-times-circle"></i> Close Guide';
+            }
+        }
+
+        // Scenario Comparison Functions
+        function switchScenario(scenarioNum) {
+            // Hide all scenario contents
+            document.querySelectorAll('.scenario-content').forEach(content => {
+                content.classList.remove('active');
+            });
+
+            // Remove active class from all tabs
+            document.querySelectorAll('.scenario-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Show selected scenario
+            document.getElementById('scenario' + scenarioNum).classList.add('active');
+            document.querySelectorAll('.scenario-tab')[scenarioNum - 1].classList.add('active');
+        }
+
+        function updateScenarioRisk(scenarioNum, value) {
+            document.getElementById('scenario' + scenarioNum + 'RiskValue').textContent = value + '%';
+        }
+
+        function updateScenarioComparison() {
+            // This function can be used to update values in real-time if needed
+        }
+
+        function runScenarioComparison() {
+            // Get annual spend from the calculator
+            const annualSpend = parseFloat(document.getElementById('annualSpend').value) || 10000000;
+
+            // Show results section
+            document.getElementById('scenarioResults').style.display = 'block';
+
+            // Calculate results for each scenario
+            const scenarios = [];
+            for (let i = 1; i <= 3; i++) {
+                const scenario = calculateScenarioResults(i, annualSpend);
+                scenarios.push(scenario);
+                updateScenarioResultCard(i, scenario);
+            }
+
+            // Update comparison table
+            updateComparisonTable(scenarios);
+
+            // Create comparison charts
+            createScenarioCharts(scenarios);
+
+            // Generate recommendation
+            generateRecommendation(scenarios);
+
+            // Scroll to results
+            document.getElementById('scenarioResults').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function calculateScenarioResults(scenarioNum, annualSpend) {
+            const name = document.getElementById('scenario' + scenarioNum + 'Name').value;
+            const focus = document.getElementById('scenario' + scenarioNum + 'Focus').value;
+            const speed = document.getElementById('scenario' + scenarioNum + 'Speed').value;
+            const resources = document.getElementById('scenario' + scenarioNum + 'Resources').value;
+            const risk = parseInt(document.getElementById('scenario' + scenarioNum + 'Risk').value);
+            const changeManagement = document.getElementById('scenario' + scenarioNum + 'Change').value;
+            const seasonality = document.getElementById('scenario' + scenarioNum + 'Seasonality').value;
+
+            // Base savings calculations based on focus area
+            let baseSavingsRate = 0.15; // 15% default
+            let timeToSavings = 3; // months
+
+            switch (focus) {
+                case 'tail':
+                    baseSavingsRate = 0.18;
+                    timeToSavings = 2;
+                    break;
+                case 'strategic':
+                    baseSavingsRate = 0.22;
+                    timeToSavings = 6;
+                    break;
+                case 'contract':
+                    baseSavingsRate = 0.16;
+                    timeToSavings = 4;
+                    break;
+                case 'quick':
+                    baseSavingsRate = 0.08;
+                    timeToSavings = 1;
+                    break;
+                case 'balanced':
+                default:
+                    baseSavingsRate = 0.15;
+                    timeToSavings = 3;
+            }
+
+            // Adjust for implementation speed
+            let implementationCost = annualSpend * 0.02; // 2% base cost
+            let timeMultiplier = 1;
+
+            switch (speed) {
+                case 'aggressive':
+                    implementationCost *= 1.5;
+                    timeMultiplier = 0.5;
+                    baseSavingsRate *= 0.9; // Slightly lower due to rushed implementation
+                    break;
+                case 'conservative':
+                    implementationCost *= 0.8;
+                    timeMultiplier = 1.5;
+                    baseSavingsRate *= 1.05; // Slightly higher due to careful implementation
+                    break;
+            }
+
+            // Adjust for resources
+            switch (resources) {
+                case 'minimal':
+                    implementationCost *= 0.5;
+                    baseSavingsRate *= 0.8;
+                    break;
+                case 'significant':
+                    implementationCost *= 2;
+                    baseSavingsRate *= 1.2;
+                    break;
+            }
+
+            // Adjust for risk tolerance
+            const riskFactor = risk / 100;
+            baseSavingsRate *= (1 + riskFactor * 0.3); // Up to 30% more savings with higher risk
+
+            // Add seasonality savings
+            let seasonalityRate = 0;
+            switch(seasonality) {
+                case 'moderate':
+                    seasonalityRate = 0.03; // 3% for moderate seasonality
+                    break;
+                case 'high':
+                    seasonalityRate = 0.05; // 5% for high seasonality
+                    break;
+                case 'extreme':
+                    seasonalityRate = 0.08; // 8% for extreme seasonality
+                    break;
+                default:
+                    seasonalityRate = 0; // No seasonality savings
+            }
+
+            // Calculate success probability
+            let successProbability = 85; // Base success rate
+            if (risk > 70) successProbability -= 15;
+            if (risk < 30) successProbability += 10;
+            if (changeManagement === 'comprehensive') successProbability += 10;
+            if (changeManagement === 'basic') successProbability -= 10;
+
+            // Calculate final values
+            const baseSavings = annualSpend * baseSavingsRate * (successProbability / 100);
+            const seasonalitySavings = annualSpend * seasonalityRate * (successProbability / 100);
+            const annualSavings = baseSavings + seasonalitySavings;
+            const totalSavings3Year = annualSavings * 3;
+            const netBenefit = totalSavings3Year - implementationCost;
+            const roi = (netBenefit / implementationCost) * 100;
+            const paybackMonths = implementationCost / (annualSavings / 12);
+
+            return {
+                name: name,
+                annualSavings: annualSavings,
+                totalSavings3Year: totalSavings3Year,
+                implementationCost: implementationCost,
+                netBenefit: netBenefit,
+                roi: roi,
+                paybackMonths: paybackMonths,
+                timeToSavings: timeToSavings * timeMultiplier,
+                successProbability: successProbability,
+                riskLevel: risk > 60 ? 'High' : risk > 30 ? 'Medium' : 'Low',
+                focus: focus,
+                speed: speed,
+                resources: resources,
+                risk: risk
+            };
+        }
+
+        function updateScenarioResultCard(scenarioNum, scenario) {
+            const card = document.getElementById('scenario' + scenarioNum + 'Result');
+
+            // Update values
+            card.querySelector('.scenario-result-title').textContent = scenario.name;
+            card.querySelector('.scenario-result-value').textContent = '$' + scenario.annualSavings.toLocaleString('en-US', { maximumFractionDigits: 0 });
+
+            const metrics = card.querySelectorAll('.metric-value');
+            metrics[0].textContent = scenario.roi.toFixed(0) + '%';
+            metrics[1].textContent = scenario.paybackMonths.toFixed(0) + ' mo';
+            metrics[2].textContent = scenario.riskLevel;
+        }
+
+        function updateComparisonTable(scenarios) {
+            // Update table cells
+            for (let i = 0; i < 3; i++) {
+                const scenario = scenarios[i];
+                const num = i + 1;
+
+                document.getElementById('s' + num + 'TotalSavings').textContent = '$' + scenario.totalSavings3Year.toLocaleString('en-US', { maximumFractionDigits: 0 });
+                document.getElementById('s' + num + 'Cost').textContent = '$' + scenario.implementationCost.toLocaleString('en-US', { maximumFractionDigits: 0 });
+                document.getElementById('s' + num + 'NetBenefit').textContent = '$' + scenario.netBenefit.toLocaleString('en-US', { maximumFractionDigits: 0 });
+                document.getElementById('s' + num + 'TimeToSavings').textContent = scenario.timeToSavings.toFixed(0) + ' months';
+                document.getElementById('s' + num + 'Breakeven').textContent = scenario.paybackMonths.toFixed(0) + ' months';
+                document.getElementById('s' + num + 'Success').textContent = scenario.successProbability + '%';
+            }
+        }
+
+        function createScenarioCharts(scenarios) {
+            // Timeline Chart
+            const timelineCtx = document.getElementById('scenarioTimelineChart');
+            if (timelineCtx) {
+                if (window.scenarioTimelineChartInstance) {
+                    window.scenarioTimelineChartInstance.destroy();
+                }
+
+                const months = Array.from({ length: 37 }, (_, i) => i); // 0-36 months
+                const datasets = scenarios.map((scenario, index) => {
+                    const data = months.map(month => {
+                        if (month < scenario.timeToSavings) return 0;
+                        const monthsSinceSavings = month - scenario.timeToSavings;
+                        const monthlySavings = scenario.annualSavings / 12;
+                        const cumulativeSavings = monthsSinceSavings * monthlySavings;
+                        return cumulativeSavings - (month === 0 ? scenario.implementationCost : 0);
+                    });
+
+                    const colors = ['#6366f1', '#10b981', '#f59e0b'];
+                    return {
+                        label: scenario.name,
+                        data: data,
+                        borderColor: colors[index],
+                        backgroundColor: colors[index] + '20',
+                        tension: 0.4,
+                        fill: false,
+                        borderWidth: 2
+                    };
+                });
+
+                window.scenarioTimelineChartInstance = new Chart(timelineCtx, {
+                    type: 'line',
+                    data: {
+                        labels: months.map(m => m % 3 === 0 ? m + ' mo' : ''),
+                        datasets: datasets
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                            },
+                            title: {
+                                display: true,
+                                text: 'Cumulative Net Savings Over 3 Years'
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function (context) {
+                                        const value = '$' + context.parsed.y.toLocaleString('en-US', { maximumFractionDigits: 0 });
+                                        return context.dataset.label + ': ' + value;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: function (value) {
+                                        return '$' + (value / 1000000).toFixed(1) + 'M';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Risk vs Reward Chart
+            const riskRewardCtx = document.getElementById('riskRewardChart');
+            if (riskRewardCtx) {
+                if (window.riskRewardChartInstance) {
+                    window.riskRewardChartInstance.destroy();
+                }
+
+                const data = scenarios.map((scenario, index) => ({
+                    x: scenario.risk,
+                    y: scenario.roi,
+                    r: Math.sqrt(scenario.annualSavings) / 100
+                }));
+
+                window.riskRewardChartInstance = new Chart(riskRewardCtx, {
+                    type: 'bubble',
+                    data: {
+                        datasets: scenarios.map((scenario, index) => {
+                            const colors = ['#6366f1', '#10b981', '#f59e0b'];
+                            return {
+                                label: scenario.name,
+                                data: [{
+                                    x: scenario.risk,
+                                    y: scenario.roi,
+                                    r: 15 + (scenario.annualSavings / 1000000) * 10
+                                }],
+                                backgroundColor: colors[index] + '80',
+                                borderColor: colors[index],
+                                borderWidth: 2
+                            };
+                        })
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                            },
+                            title: {
+                                display: true,
+                                text: 'Risk Tolerance vs ROI'
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function (context) {
+                                        return context.dataset.label + ': Risk ' + context.parsed.x + '%, ROI ' + context.parsed.y.toFixed(0) + '%';
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Risk Tolerance (%)'
+                                },
+                                min: 0,
+                                max: 100
+                            },
+                            y: {
+                                title: {
+                                    display: true,
+                                    text: 'Return on Investment (%)'
+                                },
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        function generateRecommendation(scenarios) {
+            // Simple recommendation logic - find best balance of ROI and risk
+            let bestScenario = scenarios[0];
+            let bestScore = 0;
+            let bestIndex = 0;
+
+            scenarios.forEach((scenario, index) => {
+                // Score based on ROI, success probability, and inverse risk
+                const score = (scenario.roi * 0.4) + (scenario.successProbability * 0.4) + ((100 - scenario.risk) * 0.2);
+                if (score > bestScore) {
+                    bestScore = score;
+                    bestScenario = scenario;
+                    bestIndex = index;
+                }
+            });
+
+            // Update recommendation UI
+            document.getElementById('recommendedScenario').textContent = bestScenario.name;
+
+            // Update recommended badge
+            document.querySelectorAll('.scenario-result-card').forEach(card => {
+                card.classList.remove('recommended');
+                card.querySelector('.recommended-badge')?.remove();
+            });
+
+            const recommendedCard = document.getElementById('scenario' + (bestIndex + 1) + 'Result');
+            recommendedCard.classList.add('recommended');
+            const badge = document.createElement('div');
+            badge.className = 'recommended-badge';
+            badge.textContent = 'Recommended';
+            recommendedCard.insertBefore(badge, recommendedCard.firstChild);
+
+            // Generate dynamic reasons
+            const reasons = [];
+            if (bestScenario.roi > 200) {
+                reasons.push('Exceptional return on investment (' + bestScenario.roi.toFixed(0) + '%)');
+            }
+            if (bestScenario.successProbability >= 90) {
+                reasons.push('Very high probability of success (' + bestScenario.successProbability + '%)');
+            }
+            if (bestScenario.paybackMonths < 6) {
+                reasons.push('Quick payback period (' + bestScenario.paybackMonths.toFixed(0) + ' months)');
+            }
+            if (bestScenario.risk < 40) {
+                reasons.push('Conservative risk profile suitable for most organizations');
+            }
+
+            const reasonsList = document.getElementById('recommendationReasons');
+            reasonsList.innerHTML = reasons.map(reason => '<li>' + reason + '</li>').join('');
+        }
+
+        // Update Savings Distribution Chart
+        function updateSavingsChart(tailSavings, contractSavings, adminSavings, seasonalitySavings = 0) {
+            const ctx = document.getElementById('savingsChart');
+            if (ctx) {
+                // Destroy existing chart if it exists
+                if (window.savingsChartInstance) {
+                    window.savingsChartInstance.destroy();
+                }
+
+                // Prepare data arrays
+                const labels = ['Tail Spend Consolidation', 'Contract Optimization', 'Administrative Savings'];
+                const data = [tailSavings, contractSavings, adminSavings];
+                const backgroundColors = [
+                    'rgba(99, 102, 241, 0.8)',
+                    'rgba(16, 185, 129, 0.8)',
+                    'rgba(245, 158, 11, 0.8)'
+                ];
+                const borderColors = [
+                    '#6366f1',
+                    '#10b981',
+                    '#f59e0b'
+                ];
+
+                // Add seasonality data if present
+                if (seasonalitySavings > 0) {
+                    labels.push('Seasonality Optimization');
+                    data.push(seasonalitySavings);
+                    backgroundColors.push('rgba(139, 92, 246, 0.8)');
+                    borderColors.push('#8b5cf6');
+                }
+
+                window.savingsChartInstance = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            data: data,
+                            backgroundColor: backgroundColors,
+                            borderColor: borderColors,
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function (context) {
+                                        const label = context.label || '';
+                                        const value = '$' + context.parsed.toLocaleString('en-US', { maximumFractionDigits: 0 });
+                                        const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                        const percentage = ((context.parsed / total) * 100).toFixed(1) + '%';
+                                        return label + ': ' + value + ' (' + percentage + ')';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+    </script>
+
+    <!-- Footer -->
+    <footer
+        style="background: var(--bg-secondary); border-top: 1px solid var(--border-color); margin-top: 4rem; padding: 3rem 0;">
+        <div class="container">
+            <div class="grid grid-3" style="gap: 3rem; margin-bottom: 2rem;">
+                <!-- About Section -->
+                <div>
+                    <h4 style="color: var(--text-primary); margin-bottom: 1rem; font-size: 1.1rem;">About This Tool</h4>
+                    <p style="color: var(--text-secondary); line-height: 1.6; font-size: 0.9rem;">
+                        The Procurement Savings Calculator helps organizations identify and quantify optimization
+                        opportunities
+                        using industry-proven methodologies and benchmarks.
+                    </p>
+                    <div style="margin-top: 1rem;">
+                        <a href="https://github.com/yourusername/procurement-savings-calculator"
+                            style="color: var(--primary-color); text-decoration: none; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 0.5rem;">
+                            <i class="fab fa-github"></i> View on GitHub
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Resources Section -->
+                <div>
+                    <h4 style="color: var(--text-primary); margin-bottom: 1rem; font-size: 1.1rem;">Resources</h4>
+                    <ul style="list-style: none; padding: 0; line-height: 2;">
+                        <li><a href="#methodologies"
+                                style="color: var(--text-secondary); text-decoration: none; font-size: 0.9rem; transition: color 0.3s;">
+                                <i class="fas fa-book" style="width: 20px;"></i> Calculation Methodologies
+                            </a></li>
+                        <li><a href="#examples"
+                                style="color: var(--text-secondary); text-decoration: none; font-size: 0.9rem; transition: color 0.3s;">
+                                <i class="fas fa-briefcase" style="width: 20px;"></i> Real-World Examples
+                            </a></li>
+                        <li><a href="#best-practices"
+                                style="color: var(--text-secondary); text-decoration: none; font-size: 0.9rem; transition: color 0.3s;">
+                                <i class="fas fa-star" style="width: 20px;"></i> Best Practices
+                            </a></li>
+                        <li><a href="Savings_Potential_Calculation_Guide.md"
+                                style="color: var(--text-secondary); text-decoration: none; font-size: 0.9rem; transition: color 0.3s;">
+                                <i class="fas fa-file-alt" style="width: 20px;"></i> Documentation
+                            </a></li>
+                    </ul>
+                </div>
+
+                <!-- Tools Section -->
+                <div>
+                    <h4 style="color: var(--text-primary); margin-bottom: 1rem; font-size: 1.1rem;">Tools & Features
+                    </h4>
+                    <ul style="list-style: none; padding: 0; line-height: 2;">
+                        <li style="color: var(--text-secondary); font-size: 0.9rem;">
+                            <i class="fas fa-calculator" style="width: 20px; color: var(--primary-color);"></i> Savings
+                            Calculator
+                        </li>
+                        <li style="color: var(--text-secondary); font-size: 0.9rem;">
+                            <i class="fas fa-chart-line" style="width: 20px; color: var(--accent-color);"></i> Scenario
+                            Comparison
+                        </li>
+                        <li style="color: var(--text-secondary); font-size: 0.9rem;">
+                            <i class="fas fa-chart-pie" style="width: 20px; color: var(--warning-color);"></i> Visual
+                            Analytics
+                        </li>
+                        <li style="color: var(--text-secondary); font-size: 0.9rem;">
+                            <i class="fas fa-robot" style="width: 20px; color: var(--secondary-color);"></i> AI
+                            Recommendations
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Bottom Bar -->
+            <div style="border-top: 1px solid var(--border-color); padding-top: 2rem; text-align: center;">
+                <div
+                    style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                    <div style="color: var(--text-secondary); font-size: 0.875rem;">
+                        © 2024 Procurement Analytics Community. All rights reserved.
+                    </div>
+
+                    <div style="display: flex; gap: 2rem; align-items: center;">
+                        <a href="LICENSE"
+                            style="color: var(--text-secondary); text-decoration: none; font-size: 0.875rem; transition: color 0.3s;">
+                            License
+                        </a>
+                        <a href="CONTRIBUTING.md"
+                            style="color: var(--text-secondary); text-decoration: none; font-size: 0.875rem; transition: color 0.3s;">
+                            Contributing
+                        </a>
+                        <a href="https://github.com/yourusername/procurement-savings-calculator/issues"
+                            style="color: var(--text-secondary); text-decoration: none; font-size: 0.875rem; transition: color 0.3s;">
+                            Support
+                        </a>
+                    </div>
+
+                    <div style="display: flex; gap: 1rem;">
+                        <a href="https://github.com/yourusername/procurement-savings-calculator"
+                            style="color: var(--text-secondary); font-size: 1.25rem; transition: color 0.3s;"
+                            title="GitHub Repository">
+                            <i class="fab fa-github"></i>
+                        </a>
+                        <a href="https://twitter.com/procurementtech"
+                            style="color: var(--text-secondary); font-size: 1.25rem; transition: color 0.3s;"
+                            title="Follow on Twitter">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="https://www.linkedin.com/company/procurement-analytics"
+                            style="color: var(--text-secondary); font-size: 1.25rem; transition: color 0.3s;"
+                            title="Connect on LinkedIn">
+                            <i class="fab fa-linkedin"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Built with love -->
+                <div style="margin-top: 1.5rem; color: var(--text-secondary); font-size: 0.875rem;">
+                    Made with <span style="color: #e74c3c;">❤️</span> for the procurement community
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Add hover effects for footer links -->
+    <style>
+        footer a:hover {
+            color: var(--primary-color) !important;
+        }
+
+        footer .fab:hover,
+        footer .fas:hover {
+            transform: translateY(-2px);
+            transition: transform 0.3s ease;
+        }
+
+        @media (max-width: 768px) {
+            footer .grid-3 {
+                grid-template-columns: 1fr;
+            }
+
+            footer>div>div:last-child>div {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+</body>
+
+</html>
