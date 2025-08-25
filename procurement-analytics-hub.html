@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Procurement Analytics Hub - VSTX</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #6366f1;
+            --secondary-color: #8b5cf6;
+            --accent-color: #10b981;
+            --danger-color: #ef4444;
+            --warning-color: #f59e0b;
+            --dark-bg: #0f172a;
+            --light-bg: #f5f7fa;
+            --card-bg: #ffffff;
+            --text-primary: #1a202c;
+            --text-secondary: #4a5568;
+            --text-tertiary: #718096;
+            --border-color: #e2e8f0;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--light-bg);
+            min-height: 100vh;
+            padding: 2rem;
+            color: var(--text-primary);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 4rem 0;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            border-radius: 16px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* Navigation Bar */
+        .nav-bar {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 3rem;
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            border: 1px solid var(--border-color);
+        }
+        
+        .nav-link {
+            padding: 0.5rem 1rem;
+            text-decoration: none;
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: white;
+        }
+        
+        .nav-link:hover {
+            color: var(--primary-color);
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .nav-link.active {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            border-color: transparent;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="grid" width="100" height="100" patternUnits="userSpaceOnUse"><path d="M 100 0 L 0 0 0 100" fill="none" stroke="white" stroke-width="0.5" opacity="0.1"/></pattern></defs><rect width="100%" height="100%" fill="url(%23grid)"/></svg>');
+            opacity: 0.1;
+        }
+        
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 1;
+        }
+
+        .header p {
+            font-size: 1.25rem;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: var(--shadow-xl);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 30px -10px rgba(0, 0, 0, 0.2);
+        }
+
+        .card-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            margin-bottom: 1.5rem;
+        }
+
+        .card h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .card p {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .features-list {
+            list-style: none;
+            margin-bottom: 2rem;
+        }
+
+        .features-list li {
+            padding: 0.5rem 0;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+        }
+
+        .features-list li i {
+            color: var(--accent-color);
+            margin-right: 0.75rem;
+            font-size: 0.875rem;
+        }
+
+        .card-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: var(--light-bg);
+            border-radius: 8px;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.875rem 2rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            gap: 0.75rem;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px -5px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn i {
+            font-size: 1.1rem;
+        }
+
+        .quick-links {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: var(--shadow-lg);
+            text-align: center;
+        }
+
+        .quick-links h3 {
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+        }
+
+        .links-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .quick-link {
+            padding: 1rem;
+            background: var(--light-bg);
+            border-radius: 8px;
+            text-decoration: none;
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .quick-link:hover {
+            background: linear-gradient(135deg, #e0e7ff, #f0f4ff);
+            transform: translateX(5px);
+        }
+
+        .quick-link i {
+            color: var(--primary-color);
+        }
+
+        .footer {
+            text-align: center;
+            color: var(--text-secondary);
+            margin-top: 3rem;
+            padding: 2rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .card-stats {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            background: var(--accent-color);
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 600;
+            border-radius: 20px;
+            margin-left: 0.5rem;
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.4);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(99, 102, 241, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(99, 102, 241, 0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Procurement Analytics Hub</h1>
+            <p>Your gateway to data-driven procurement optimization</p>
+        </div>
+
+        <!-- Navigation Bar -->
+        <nav class="nav-bar">
+            <a href="index.html" class="nav-link">
+                <span>🏠</span> Home
+            </a>
+            <a href="analytics-dashboard.html" class="nav-link">
+                <span>📊</span> Analytics Dashboard
+            </a>
+            <a href="cost-savings-guide.html" class="nav-link">
+                <span>📚</span> Cost Savings Guide
+            </a>
+            <a href="procurement-analytics-hub.html" class="nav-link active">
+                <span>🌐</span> Analytics Hub
+            </a>
+            <a href="savings-potential-guide.html" class="nav-link">
+                <span>💰</span> Savings Calculator
+            </a>
+            <a href="pareto-analysis-guide.html" class="nav-link">
+                <span>📈</span> Pareto Guide
+            </a>
+        </nav>
+
+        <div class="cards-grid">
+            <!-- Savings Potential Card -->
+            <div class="card">
+                <div class="card-icon pulse">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h2>Savings Potential Calculator</h2>
+                <p>Discover your procurement optimization opportunities with our comprehensive savings calculator and methodology guide.</p>
+                
+                <div class="card-stats">
+                    <div class="stat">
+                        <div class="stat-value">10-25%</div>
+                        <div class="stat-label">Potential Savings</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value">6-12mo</div>
+                        <div class="stat-label">ROI Timeline</div>
+                    </div>
+                </div>
+
+                <ul class="features-list">
+                    <li><i class="fas fa-check"></i> Interactive savings calculator</li>
+                    <li><i class="fas fa-check"></i> 6 proven methodologies including seasonality</li>
+                    <li><i class="fas fa-check"></i> Scenario comparison tool</li>
+                    <li><i class="fas fa-check"></i> Risk-adjusted projections</li>
+                    <li><i class="fas fa-check"></i> Implementation roadmap</li>
+                </ul>
+
+                <a href="./savings-potential-guide.html" class="btn">
+                    <i class="fas fa-calculator"></i>
+                    Launch Calculator
+                </a>
+            </div>
+
+            <!-- Supplier Concentration Card -->
+            <div class="card">
+                <div class="card-icon">
+                    <i class="fas fa-network-wired"></i>
+                </div>
+                <h2>Supplier Concentration Analysis</h2>
+                <p>Understand and optimize your supplier portfolio risk using the Herfindahl-Hirschman Index (HHI) methodology.</p>
+                
+                <div class="card-stats">
+                    <div class="stat">
+                        <div class="stat-value">0.25-0.50</div>
+                        <div class="stat-label">Optimal HHI</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value">3 Levels</div>
+                        <div class="stat-label">Risk Categories</div>
+                    </div>
+                </div>
+
+                <ul class="features-list">
+                    <li><i class="fas fa-check"></i> HHI calculation methodology</li>
+                    <li><i class="fas fa-check"></i> Risk assessment framework</li>
+                    <li><i class="fas fa-check"></i> Strategic recommendations</li>
+                    <li><i class="fas fa-check"></i> Category-specific strategies</li>
+                    <li><i class="fas fa-check"></i> Best practices guide</li>
+                </ul>
+
+                <a href="./Concentration-doc.html" class="btn">
+                    <i class="fas fa-chart-pie"></i>
+                    View Analysis Guide
+                </a>
+            </div>
+        </div>
+
+        <div class="quick-links">
+            <h3>Quick Access Resources</h3>
+            <div class="links-grid">
+                <a href="./Procurement_Analytics_Quick_Reference.html" class="quick-link">
+                    <i class="fas fa-file-alt"></i>
+                    <span>2-Page Quick Reference</span>
+                    <span class="badge">NEW</span>
+                </a>
+                <a href="./Savings_Potential_Calculation_Guide.md" class="quick-link">
+                    <i class="fas fa-book"></i>
+                    <span>Detailed Methodology</span>
+                </a>
+                <a href="./README.md" class="quick-link">
+                    <i class="fas fa-github"></i>
+                    <span>Documentation</span>
+                </a>
+                <a href="#" class="quick-link" onclick="alert('Dashboard integration coming soon!')">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Live Dashboard</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>© 2025 VSTX Procurement Analytics | Version 1.0</p>
+            <p>Empowering procurement professionals with data-driven insights</p>
+        </div>
+    </div>
+</body>
+</html>
